@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}Editar Cliente{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h3>Editar Cliente </h3> </br></br>
+        <h3> {{ client.name }}
+                                         {% if client.picture != None %}
+                                            <img src="{{ MEDIA_URL}}{{ client.picture }}" width="80" height="90" >
+                                          {% endif %}
+        </h3>
+        </br>
+        <form enctype="multipart/form-data" action="{% url 'order_control:client_update' client.id %}"
+              method="post" {% if form_submitted %}class="was-validated" {% endif %}>
+            {% csrf_token %}
+            {% include 'order_control/client/form.html' %}
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <a href="{% url 'order_control:client_list' %}"> <div class="btn btn-primary">Voltar</div></a>
+        </form>
+    </div>
+{% endblock %}

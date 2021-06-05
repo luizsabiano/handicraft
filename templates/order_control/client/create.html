@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}Cadastro de Clientes{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h3>Cadastrar Cliente</h3>
+        <form enctype="multipart/form-data" action="{% url 'order_control:client_create' %}"
+                    method="post" {% if form_submitted %} class="was-validated" {% endif %}>
+            {% csrf_token %}
+            {% include 'order_control/client/form.html' %}
+            <button type="submit" class="btn btn-primary">Criar</button>
+        </form>
+    </div>
+{% endblock %}

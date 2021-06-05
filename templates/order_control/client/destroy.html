@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block title %}Excluir Cliente{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h3>Excluir Cliente </h3> </br></br>
+        <h3> {{ client.name }}
+                                         {% if client.picture != None %}
+                                            <img src="{{ MEDIA_URL}}{{ client.picture }}" width="80" height="90" >
+                                          {% endif %}
+        </h3>
+        </br>
+
+        <form action="{% url 'order_control:client_destroy' client.id %}" method="post">
+            {% csrf_token %}
+            <fieldset disabled>
+                {% include 'order_control/client/form.html' %}
+            </fieldset>
+            <button type="submit" class="btn btn-danger">Excluir</button>
+                <a href="{% url 'order_control:client_list' %}"> <div class="btn btn-primary">Voltar</div></a>
+        </form>
+    </div>
+{% endblock %}

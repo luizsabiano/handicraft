@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}Lista de clientes{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h3>Lista de Clientes</h3></br>
+        <a href="{% url 'order_control:client_create' %}" class="btn btn-primary">Novo Cliente</a>
+        <br/><br/>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Boleira</th>
+                <th>Foto</th>
+                <th>Balanço</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for client in clients %}
+                <tr>
+                    <td>{{ client.id }}</td>
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.phone }}</td>
+                    <td>{{ client.cakeMaker }}</td>
+                    <td><img src="{{ MEDIA_URL}}{{ client.picture }}" width="50" height="60" ></td>
+                    <td>{{ client.balance }}</td>
+                    <td>
+                        <a href="{% url 'order_control:client_update' client.id %}">Editar<a> |
+                        <a href="{% url 'order_control:client_destroy' client.id %}">Excluir<a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
