@@ -1,9 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    	{% load static %}
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script type="text/javascript" src="{% static '/order_control/js/lib/jquery-1.7.2.min.js' %}"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="text/javascript" src="{% static '/order_control/js/handicraft.js' %}"></script>
+    <script type="text/javascript" src="{% static '/order_control/js/lib/ajax_setup.js' %}"></script>
+
+    <style>
+        .row-div {
+            display: flex;
+            justify-content: center;
+        }
+        /* Having some margin to make the two divs some distance */
+        .row-div>div {
+            margin-right: 50px;
+        }
+    </style>
+
 </head>
 <body>
 <h1>

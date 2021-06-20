@@ -27,4 +27,12 @@ urlpatterns = [
     path('clients/', views.client_list, name='client_list'),
     path('clients/<int:id>/update/', views.client_update, name='client_update'),
     path('clients/<int:id>/destroy/', views.client_destroy, name='client_destroy'),
+
+    path('order/', views.order_create, name='order_create'),
+    path('orders/', views.order_list, name='order_list'),
+    path('order_add_items/', views.order_add_items, name='order_add_items'),
+    path('orders/<int:id>/update/', views.order_update, name='order_update'),
+    path('orders/<int:id>/destroy/', views.order_destroy, name='order_destroy'),
+    path('orders/items/<int:id>/destroy/', views.order_items_destroy, name='order_items_destroy'),
+    path('orders/items/<int:id>/update/', views.order_items_update, name='order_items_update'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+
+{% block title %}Pedido do Cliente{% endblock %}
+
+{% block content %}
+<div class="container" xmlns="http://www.w3.org/1999/html">
+        <h3>Pedido do Cliente  - Adicionar Itens</h3>
+
+        </br>
+        <div id="hideDescription">
+            <div id="description" class="form-group">
+                <div class="row">
+                    <div  id="head" class="col-sm-9" ></div>
+                    <div id="photo" class="col-sm-3"></div>
+                </div>
+
+            </div>
+            <button id="showItemCreate"  class="btn btn-primary">Inserir Itens</button>
+            <a href="{% url 'order_control:order_list' %}">
+            <button id="goOrderList" class="btn btn-primary">Finalizar</button>
+            </a>
+            </br></br>
+            <div id="divTableItems"> </div>
+        </div>
+            <script>
+            function addNewDiv(id, tagHsize, titulo, dado){
+            this.titulo = "<span class='label label-default' style='font-size:11px;'><strong>" + titulo + "</strong></span>";
+            this.dado = "<span class='label label-default' style='font-size:14px;' id='" + id +"'  >" + dado + "</span>";
+
+                $("#head").append("<div class='form-control'>" +  this.titulo +  this.dado + "</div>");
+            }
+
+            function addNewDivDescription(tagHsize, titulo, dado){
+            this.titulo = "<span class='label label-default' style='font-size:11px;'><strong>" + titulo + "</strong></span>";
+            this.dado = "<span class='label label-default' style='font-size:14px;'>" + dado + "</span>";
+
+                $("#description").append("<div class='form-control'>" +  this.titulo +  this.dado + "</div>");
+            }
+
+            function addNewDivPhoto(photo){
+                this.photo = "<img src='{{ MEDIA_URL}}" + photo + "' width='70' height='95' >"
+                $("#photo").append(this.photo);
+            }
+
+            if ( "{{ client.cakeMaker }}" == "True")
+                cliente = "Boleira: ";
+            else cliente = "Cliente: ";
+
+            geralTag = "h6";
+            deliveryAt = '{{order.deliveryAt|date:"SHORT_DATE_FORMAT" }}';
+
+
+            addNewDiv("", "h4", cliente , "<strong>{{ client }}</strong>" );
+            addNewDiv("", geralTag, "Entrega em ", deliveryAt );
+            addNewDiv("", geralTag, "Entrada: R$ ", parseFloat("{{order.downPayment}}").toFixed(2));
+            addNewDiv("totalOrder", geralTag, "Total Pedido: R$ ", parseFloat("{{order.totalOrder}}").toFixed(2));
+            addNewDivPhoto("{{ client.picture }}");
+            addNewDivDescription( geralTag, "Descrição: ", "{{order.description|linebreaks }}");
+
+            var i = 0;
+            var dados = [[]];
+            {% for boxtop in box_top %}
+                dados[i] = ["{{ boxtop.pk }}", "{{ boxtop.type }}", "{{ boxtop.theme }}", "{{ boxtop.birthdayName }}", "{{ boxtop.amount }}"];
+                i = i +1;
+            {% endfor %}
+
+            if (dados[0].length != 0)
+                createTable( dados );
+
+
+
+
+        function createTable(dados){
+        headTable = '<table class="table table-striped table-hover" id="itemsOrder"> <thead> <tr style="color: #fff; background: black;"> <th>Tipo</th> <th>TEMA</th> <th>ANIVERSARIANTE</th> <th>VALOR</th> <th>AÇÕES</th> </tr> </thead> <tbody> ';
+        fotterTable = '</tbody> </table>';
+        bodyTable = '';
+        for ( i = 0; i < dados.length; i++){
+            pk = dados[i][0];
+            tipo = dados[i][1];
+            tema = dados[i][2];
+            aniversariante = dados[i][3];
+            valor = dados[i][4];
+            bodyTable =  bodyTable + '<tr> <th>'+ tipo + '</th> <th>'+ tema + '</th> <th>'+ aniversariante + '</th> <th>'+
+            valor + '</th> <th><a href="../../items/'+ pk +'/update/">Editar<a> | <a href="../../items/'+ pk +'/destroy/">Excluir<a></th> </tr>';
+        }
+            $("#divTableItems").html(headTable + bodyTable + fotterTable)
+        }
+
+
+            </script>
+
+
+
+
+
+
+        <div id="ItemCreate">
+            <form id="teste" enctype="multipart/form-data" action="{% url 'order_control:order_add_items' %}"
+                       method="post" {% if form_submitted %} class="was-validated" {% endif %}>
+                {% csrf_token %}
+                <input type="hidden" name="order" id="order" value="{{order.id}}">
+
+                {% include 'order_control/order/birthday_box_form.html' %}
+
+            </form>
+        </div>
+    </div>
+{% endblock %}

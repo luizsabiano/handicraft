@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}Pedido do Cliente{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h3>Pedido do Cliente</h3>
+        </br>
+        <form enctype="multipart/form-data" action="{% url 'order_control:order_create' %}"
+                    method="post" {% if form_submitted %} class="was-validated" {% endif %}>
+            {% csrf_token %}
+            {% include 'order_control/order/form.html' %}
+            <button type="submit" class="btn btn-primary">Criar</button>
+        </form>
+
+        <script>
+            $(document).ready(function() {
+              $('.js-example-basic-single').select2();
+            });
+        </script>
+    </div>
+{% endblock %}

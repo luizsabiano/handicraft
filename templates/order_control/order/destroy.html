@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}Excluir Pedido{% endblock %}
+
+{% block content %}
+    <div class="container">
+        </br>
+        <h3>Excluir Pedido {{ order.id }} cadastrado em {{ form.deliveryAt.value|date:"SHORT_DATE_FORMAT" }}</h3> </br></br>
+        </br>
+
+        <form action="{% url 'order_control:order_destroy' order.id %}" method="post">
+            {% csrf_token %}
+            <fieldset disabled>
+                {% include 'order_control/order/form.html' %}
+            </fieldset>
+
+
+                    <table class="table table-striped table-hover" id="itemsOrder">
+                        <thead>
+                        <tr style="color: #fff; background: #f81;">
+                            <th>Tipo</th> <th>TEMA</th>
+                            <th>ANIVERSARIANTE</th>
+                            <th>VALOR</th> <th>AÇÕES</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if items_order != none %}
+                            {% for items in items_order %}
+                                <tr>
+                                    <td>{{ items.type}}</td>
+                                    <td>{{ items.theme}}</td>
+                                    <td>{{ items.birthdayName}}</td>
+                                    <td>{{ items.amount}}</td>
+                                    <td><a href="{% url 'order_control:order_items_destroy' items.id %}">Excluir</a></td>
+                                </tr>
+                            {% endfor%}
+                        {% endif %}
+                        </tbody>
+                    </table>
+
+
+            <button type="submit" class="btn btn-danger">Excluir</button>
+            <a href="{% url 'order_control:order_list' %}"> <div class="btn btn-primary">Voltar</div></a>
+        </form>
+
+
+    </div>
+{% endblock %}

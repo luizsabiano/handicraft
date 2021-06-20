@@ -1,0 +1,76 @@
+
+<div class="form-group">
+        {{ form.client.label_tag }}
+        <select name="client" required id="id_client" class="form-control js-example-basic-single">
+           {% if order.client is none  %}
+                <option selected="selected"> ------- </option>
+                {% for field in form.fields.client.queryset %}
+                    <option value="{{ field.id }}">{{ field.name}}</option>
+                {% endfor %}
+           {% else %}
+                <option selected="selected"> ------- </option>
+                {% for field in form.fields.client.queryset %}
+                    {% if order.client.name ==  field.name %}
+                        <option value="{{ field.id }}" selected="selected">{{ field.name}}</option>
+                    {% else %}
+                        <option value="{{ field.id }}">{{ field.name}}</option>
+                    {% endif %}
+                {% endfor %}
+           {% endif %}
+
+        </select>
+</div>
+
+
+
+<div class="form-group">
+    {{ form.description.label_tag }}
+    {{ form.description }}
+    <div class="invalid-feedback">
+        {{ form.description.errors }}
+    </div>
+</div>
+
+<div class="form-group">
+
+        {{ form.deliveryAt.label_tag }}
+        {{ form.deliveryAt }}
+        <div class="invalid-feedback">
+            {{ form.deliveryAt.errors }}
+        </div>
+         -
+        {{ form.delivered.label_tag }}
+        {{ form.delivered }}
+        <div class="invalid-feedback">
+            {{ form.delivered.errors }}
+        </div>
+
+</div>
+
+<div class="form-group">
+    <div class="form-control">
+        {{ form.downPayment.label_tag }}
+        {{ form.downPayment }}
+        <div class="invalid-feedback">
+            {{ form.downPayment.errors }}
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="form-control">
+        {{ form.totalOrder.label_tag }}
+        <label id='totalOrder'>{{ form.totalOrder.value }}</label>
+        <div class="invalid-feedback">
+            {{ form.totalOrder.errors }}
+        </div>
+    </div>
+    </br>
+    <div class="form-control">
+        {{ form.totalPayment.label_tag }}
+        <label id='totalPayment'>{{ form.totalPayment.value }}</label>
+        <div class="invalid-feedback">
+            {{ form.totalPayment.errors }}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="row">
+   <div id="head" class="col-sm-9">
+       <div class="form-group">
+        {{ box_top_form.type }}
+            <div class="invalid-feedback">
+                {{ box_top_form.type.errors }}
+            </div>
+       </div>
+
+       <div class="form-group">
+            {{ box_top_form.theme }}
+            <div class="invalid-feedback">
+                {{ box_top_form.theme.errors }}
+            </div>
+       </div>
+
+
+       <div class="form-group">
+            {{ box_top_form.birthdayName }}
+            <div class="invalid-feedback">
+                {{ box_top_form.birthdayName.errors }}
+            </div>
+       </div>
+
+       <div class="form-group">
+            {{ box_top_form.description }}
+            <div class="invalid-feedback">
+               {{ box_top_form.description.errors }}
+            </div>
+    </div>
+   </div>
+
+   <div id="photo" class="col-sm-3">
+       <img src="{{ MEDIA_URL}}{{ box_top_form.storedIn.value }}" class="img-thumbnail img-fluid" >
+   </div>
+</div>
+
+
+<div class="form-group">
+    {{ box_top_form.storedIn.label_tag }}
+    {{ box_top_form.storedIn }}
+    <div class="invalid-feedback">
+        {{ box_top_form.storedIn.errors }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="form-control">
+        {{ box_top_form.amount.label_tag }}
+        {{ box_top_form.amount }}
+        <div class="invalid-feedback">
+            {{ box_top_form.amount.errors }}
+        </div>
+    </div>
+</div>
+
+{% if order.id is not none  %}
+    <button id="caixaBoxCreate" type="submit" class="btn btn-primary">Incluir Item</button>
+    <div id="caixaBoxCreate2" class="btn btn-primary">Voltar</div>
+{% endif %}
+

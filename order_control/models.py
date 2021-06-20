@@ -8,14 +8,20 @@ PAYMENT_CHOICES = (
     ('CASH', 'Dinheiro'),
 )
 
+BOX_TOP_CHOICES = (
+    ('TOPO', 'TOPO DE BOLO'),
+    ('CAIXA', 'CAIXA BOX'),
+)
+
 
 # classe cliente. Atributo balance: se negativo o cliente é devedor, se positivo ele tem haver
 
 class Client (models.Model):
+    createAt = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255, verbose_name='Nome do Cliente')
     phone = models.CharField(max_length=15, null=True, blank=True, verbose_name='Telefone')
     picture = models.ImageField(upload_to='clients/', null=True, blank=True, verbose_name='Foto de Perfil')
-    balance = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
+    balance = models.DecimalField(max_digits=8, decimal_places=2, default=0.0, verbose_name='Balanço')
     cakeMaker = models.BooleanField(default=False, verbose_name='Boleira')
 
     def __str__(self):
@@ -29,37 +35,28 @@ class Client (models.Model):
 
 class Order(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
-    deliveryAt = models.DateTimeField(null=True, blank=True)
-    description = models.CharField(max_length=255, null=True, blank=True)
-    downPayment = models.DecimalField(max_digits=8, decimal_places=2)
-    totalOrder = models.DecimalField(max_digits=8, decimal_places=2)
-    totalPayment = models.DecimalField(max_digits=8, decimal_places=2)
+    deliveryAt = models.DateTimeField(null=True, blank=True, verbose_name="Entregar em")
+    delivered = models.BooleanField(default=False, verbose_name="Entregue")
+    description = models.TextField(max_length=255, null=True, blank=True)
+    downPayment = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Entrada R$', null=True, blank=True, default=0.00)
+    totalOrder = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Total Pedido R$', null=True, blank=True, default=0.00)
+    totalPayment = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Total Pago R$', null=True, blank=True, default=0.00)
+    client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name='Cliente')
 
     def __str__(self):
-        return self.createdAt, self.totalOrder, self.totalPayment
+        return str(self.id) + ' - '   + self.client.name + ' - ' + self.createdAt.strftime('%m/%d/%Y')
 
 
-# Classe topo de bolo. Amount, Valor do topo.
+# Classe topo de bolo / caixa box. Amount, Valor do topo.
 # esta classe funciona como um ítem de pedido
 
-class TopOfCake(models.Model):
+class BoxTop(models.Model):
+    type = models.CharField(max_length=255, choices=BOX_TOP_CHOICES)
     theme = models.CharField(max_length=255)
     birthdayName = models.CharField(max_length=255, null=True, blank=True)
-    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    amount = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Valor total das Caixas R$')
     description = models.CharField(max_length=255, null=True, blank=True)
-    storedIn = models.CharField(max_length=255, null=True, blank=True)
-    order = models.ForeignKey(Order, on_delete=models.PROTECT)
-
-
-# classe caixas de aniversários
-
-class BirthdayBox(models.Model):
-    type = models.CharField(max_length=255, null=True, blank=True)
-    theme = models.CharField(max_length=255)
-    birthdayName = models.CharField(max_length=255, null=True, blank=True)
-    amount = models.DecimalField(max_digits=8, decimal_places=2)
-    description = models.CharField(max_length=255, null=True, blank=True)
-    storedIn = models.CharField(max_length=255, null=True, blank=True)
+    storedIn = models.ImageField(upload_to='boxes/', null=True, blank=True, verbose_name='Figura')
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
 
 
@@ -71,14 +68,7 @@ class LoyatyCard(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     finishedAt = models.DateTimeField(null=True, blank=True)
     giftDate = models.DateTimeField(null=True,  blank=True)
-    giftTopOfCake = models.ForeignKey(TopOfCake, on_delete=models.PROTECT, null=True, blank=True)
-
-
-# Esta classe funcionar com um ítem de cartão fidelidade
-# Uma boleira pode ter vários cartões durante a parceria
-
-class CakeMakerLoyalty(models.Model):
-    loyaltyCard = models.ForeignKey(LoyatyCard, on_delete=models.PROTECT)
+    giftTopOfCake = models.ForeignKey(BoxTop, on_delete=models.PROTECT, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
 
 
@@ -87,12 +77,13 @@ class CakeMakerLoyalty(models.Model):
 
 class Adhesive (models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
-    topOfCake = models.ForeignKey(TopOfCake, on_delete=models.PROTECT)
+    topOfCake = models.ForeignKey(BoxTop, on_delete=models.PROTECT)
+    loyatyCard = models.ForeignKey(LoyatyCard, on_delete=models.PROTECT)
 
 
 class Payment (models.Model):
     type = models.CharField(max_length=255, choices=PAYMENT_CHOICES)
-    createAt = models.DateTimeField(auto_now_add=True)
+    createAt = models.DateField(auto_now_add=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
 
@@ -100,7 +91,8 @@ class Payment (models.Model):
 # classe compras para contabilizar os gastos com compras de materiais
 
 class Purchase(models.Model):
-    createAt = models.DateTimeField()
+    createAt = models.DateField()
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
 
 
 class PurchasedItems(models.Model):

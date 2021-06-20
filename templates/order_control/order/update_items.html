@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}Editar Item de Pedido{% endblock %}
+
+{% block content %}
+    <div class="container">
+        </br>
+        <h3>Editar Item de Pedido </h3> </br></br>
+        </br>
+
+        <form enctype="multipart/form-data" action="{% url 'order_control:order_items_update' box_top.id %}" method="post">
+            {% csrf_token %}
+
+                {% include 'order_control/order/birthday_box_form.html' %}
+
+            <button type="submit" class="btn btn-danger">Salvar</button>
+            <a href="{% url 'order_control:order_update' box_top.order.id %}"> <div class="btn btn-primary">Voltar</div></a>
+        </form>
+
+
+    </div>
+{% endblock %}
