@@ -1,0 +1,107 @@
+.layout_container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: top;
+        align-items: center
+
+}
+
+body{
+    #background-image: url("/media/lineMimos/foto_perfil.jpg");
+    #background-position: center; /* Center the image */
+    #background-repeat: no-repeat; /* Do not repeat the image */
+    #background-size: cover ; /* Resize the background image to cover the entire container */
+
+}
+
+#centralizer{
+    width: 600px;
+    text-align:center !important;
+    border:solid;
+}
+
+.limit{
+    height:90%;
+    width: 80%;
+    float:center;
+    border:solid;
+    border-color: #fee1feff;
+}
+
+.divLogin{
+    height:350px;
+    width: 440px;
+    border:solid;
+    #border-color: #fee1feff;
+    border-color: #fe1bfcff;
+    position: relative;}
+
+#login_body{
+    height:290px;
+    width: 350px;
+    position: absolute;
+    top: 20%;
+    left: 10%;
+
+
+}
+
+#login_header{
+    background-color: #fe1bfcff;
+    opacity: 1;
+    height: 40px;
+}
+
+.h2color {
+    display: block;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    color:white;
+    font-size: 18px;
+    line-height: 40px;
+    vertical-align: middle;
+
+}
+
+.textMenu {
+    display: block;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    color: #fe1bfcff;
+    font-size: 18px;
+    line-height: 40px;
+    vertical-align: middle;
+
+}
+
+.textMenu:hover {
+    color: #f58bfcff;
+}
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+    background-color: #fe1bfcff !important;
+}
+
+.btn-primary:hover{
+    background-color: #ed5effff !important;
+}
+
+
+.form-control, .form-control:focus{
+   box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+   border: rgba(255, 255, 255, 0);
+   outline: #fe1bfcff auto 5px ;
+}
+
+
+
+
+header.page-header div h1 {
+    color: #fe1bfcff;
+    font: bold 45px 'Dancing Script', cursive,
+        fantasy;
+    margin: 2%;
+}
+

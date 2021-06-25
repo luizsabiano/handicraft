@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'order_control/css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'order_control/css/bootstrap.min.css' %}" />
+</head>
+<body>
+
+    <div class="layout_container">
+        <div class="divLogin">
+            <div id="login_header">
+                <div id="branding">
+                    <span class="h2color">Line Mimos Artesã</span>
+                </div>
+            </div>
+
+
+            <div id="login_body">
+
+
+                <form action="/login/" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">Usuário</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Entre com o e-mail">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Entre com a senha">
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary form-control">Entrar</button>
+                    </div>
+                </form>
+                {% if message %}
+                    <div class="alert alert-primary" >
+                        {{ message }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

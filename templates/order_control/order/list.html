@@ -14,7 +14,7 @@
                 <th>Data Pedido</th>
                 <th>Data Entrega</th>
                 <th>Cliente</th>
-                <th>Descrição</th>
+                <th>Entregue</th>
                 <th>Entrada</th>
                 <th>Ações</th>
             </tr>
@@ -26,7 +26,12 @@
                     <td>{{ order.createdAt|date:"SHORT_DATE_FORMAT" }}</td>
                     <td>{{ order.deliveryAt|date:"SHORT_DATE_FORMAT" }}</td>
                     <td>{{ order.client.name }}</td>
-                    <td>{{ order.description }}</td>
+                    <td>{% if order.delivered %}
+                            Sim
+                        {% else %}
+                            Não
+                        {% endif %}
+                    </td>
                     <td>{{ order.downPayment }}</td>
                     <td>
                         <a href="{% url 'order_control:order_update' order.id %}">Editar<a> |

@@ -22,8 +22,9 @@ from order_control import views
 app_name = 'order_control'
 
 urlpatterns = [
-    # path('order_control/create/', views.client_create, name='client_create'),
-    path('', views.client_create, name='client_create'),
+    path('login/', views.LoginView.as_view(), name='login'),
+    path('', views.HomeView.as_view(), name='homeView'),
+    path('client/', views.ClientCreateView.as_view(), name='client_create'),
     path('clients/', views.client_list, name='client_list'),
     path('clients/<int:id>/update/', views.client_update, name='client_update'),
     path('clients/<int:id>/destroy/', views.client_destroy, name='client_destroy'),

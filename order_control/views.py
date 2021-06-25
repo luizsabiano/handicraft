@@ -1,14 +1,54 @@
 import json
-from datetime import date
 
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render, reverse, redirect
 from django.utils import timezone
+from django.views.generic import TemplateView, CreateView
 
 from order_control.form import ClientForm, OrderForm,  BoxTopForm
 from order_control.models import Client, Order, BoxTop, LoyatyCard, Adhesive
 
+
+class LoginView(TemplateView):
+    template_name = 'order_control/login.html'
+
+    def post(self, request, *args, **kwargs):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+
+        if user:
+            print(vars(user))
+            django_login(request, user)
+            return redirect('/')  # redirect é um atalho para HttpResponseRedirect
+        message = 'Credenciais Inválidas'
+        return self.render_to_response({'message': message})
+
+
+class HomeView(LoginRequiredMixin, TemplateView):
+    template_name = 'order_control/index.html'
+
+
+class FormSubmittedIncontextMixin:
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form, form_submitted=True))
+
+
+class ClientCreateView(LoginRequiredMixin, FormSubmittedIncontextMixin, CreateView):
+    model = Client
+    #   fields = ['address', 'address_complement', 'city', 'state', 'country']
+    form_class = ClientForm
+    template_name = 'order_control/client/create.html'
+    # para não entrar na página de detalhes e usar a list.
+    # success_url = reverse_lazy('my_app:address_list')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 def client_create(request):
     form_submitted = False
@@ -145,7 +185,7 @@ def order_items_update(request, id):
 
 
 def order_list(request):
-    order = Order.objects.all()
+    order = Order.objects.all().order_by('delivered', 'deliveryAt')
     return render(request, 'order_control/order/list.html', {'orders': order})
 
 
