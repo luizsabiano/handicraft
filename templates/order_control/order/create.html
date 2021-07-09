@@ -10,7 +10,8 @@
                     method="post" {% if form_submitted %} class="was-validated" {% endif %}>
             {% csrf_token %}
             {% include 'order_control/order/form.html' %}
-            <button type="submit" class="btn btn-primary">Criar</button>
+            <button type="submit" class="btn btn-primary">Inserir Pedido</button>
+            <a href="{% url 'order_control:client_create' %}"> <div class="btn btn-primary">Cadastrar Cliente</div></a>
         </form>
 
         <script>

@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block title %}Recebimento{% endblock %}
+
+{% block content %}
+<script xmlns="http://www.w3.org/1999/html">
+        var PAYMENT_CHOICES = new Map();
+        PAYMENT_CHOICES.set('PP', 'PicPay');
+        PAYMENT_CHOICES.set('PIX', 'PIX');
+        PAYMENT_CHOICES.set('CC', 'Cartão de Crédito');
+        PAYMENT_CHOICES.set('CD', 'Cartão de Débito');
+        PAYMENT_CHOICES.set('CASH', 'Dinheiro');
+    </script>
+
+    <div class="container">
+        </br>
+        <h3> Recebimentos
+        </h3> </br>
+        <table border="0" class="table table-striped table-hover">
+            <tr>
+                <td width="80%" colspan="4"><h3> {{ client.name }} </h3></td>
+                <td rowspan="3">{% if client.picture != None %}
+                        <img src="{{ MEDIA_URL}}{{ client.picture }}" width="100" height="140" >
+                    {% endif %}
+                </td>
+            <tr>
+                <td colspan="4">
+                    {% if client.cakeMaker %}
+                        Boleira
+                    {% else %}
+                        Cliente
+                    {% endif %}
+                </td >
+            </tr>
+            <tr><td colspan="4"><a href="{% url 'order_control:order_update' order.id %}"> Pedido nº {{ order.id }}</a></td></tr>
+            <tr>
+                <td colspan="5"></td>
+            </tr>
+            {% for payment in payments %}
+            <tr>
+                    <td>{{ payment.createAt }}</td>
+                    <td>{% if payment.downPayment %}
+                            Entrada
+                        {% endif %}
+                    </td>
+                    <td>
+                    <script>
+                        document.write(PAYMENT_CHOICES.get('{{ payment.type }}'));
+                    </script>
+                    </td>
+                    <td>{{ payment.amount }}</td>
+                    <td><a href="{% url 'order_control:payment_destroy' payment.id %}">Excluir<a></td>
+
+            </tr>
+            {% endfor %}
+
+        </table>
+        </br></br>
+        <table class="table table-striped table-hover">
+           <tr>
+                <td width="50%">
+                    <form enctype="multipart/form-data" action="{% url 'order_control:order_payment' order.id %}"
+              method="post" {% if form_submitted %}class="was-validated" {% endif %}>
+            {% csrf_token %}
+            {% include 'order_control/order/form_payment.html' %}
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <a href="{% url 'order_control:order_list' %}"> <div class="btn btn-primary">Voltar</div></a>
+        </form>
+                </td>
+                <td ></td>
+            </tr>
+
+        </table>
+        </br>
+
+    </div>
+{% endblock %}

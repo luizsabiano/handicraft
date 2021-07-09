@@ -51,10 +51,11 @@ class Order(models.Model):
 # esta classe funciona como um ítem de pedido
 
 class BoxTop(models.Model):
+    gift = models.BooleanField(default=False, verbose_name="Brinde?")
     type = models.CharField(max_length=255, choices=BOX_TOP_CHOICES)
     theme = models.CharField(max_length=255)
     birthdayName = models.CharField(max_length=255, null=True, blank=True)
-    amount = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Valor total das Caixas R$')
+    amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00, verbose_name='Valor total das Caixas R$')
     description = models.CharField(max_length=255, null=True, blank=True)
     storedIn = models.ImageField(upload_to='boxes/', null=True, blank=True, verbose_name='Figura')
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
@@ -66,7 +67,8 @@ class BoxTop(models.Model):
 
 class LoyatyCard(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
-    finishedAt = models.DateTimeField(null=True, blank=True)
+    adhesiveCount = models.IntegerField(null=True, blank=True, default=0)
+    finishedAt = models.DateTimeField(null=True, blank=True, default=None)
     giftDate = models.DateTimeField(null=True,  blank=True)
     giftTopOfCake = models.ForeignKey(BoxTop, on_delete=models.PROTECT, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
@@ -83,8 +85,9 @@ class Adhesive (models.Model):
 
 class Payment (models.Model):
     type = models.CharField(max_length=255, choices=PAYMENT_CHOICES)
-    createAt = models.DateField(auto_now_add=True)
+    createAt = models.DateField(auto_now_add=False, verbose_name="Pago em")
     amount = models.DecimalField(max_digits=8, decimal_places=2)
+    downPayment = models.BooleanField(default=False, verbose_name='Entrada')
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
 
 

@@ -50,27 +50,18 @@
 <div class="form-group">
     <div class="form-control">
         {{ form.downPayment.label_tag }}
-        {{ form.downPayment }}
-        <div class="invalid-feedback">
-            {{ form.downPayment.errors }}
-        </div>
+        <label id='downPayment'>{{ order.downPayment }}</label>
     </div>
 </div>
 
 <div class="form-group">
     <div class="form-control">
         {{ form.totalOrder.label_tag }}
-        <label id='totalOrder'>{{ form.totalOrder.value }}</label>
-        <div class="invalid-feedback">
-            {{ form.totalOrder.errors }}
-        </div>
+        <label id='totalOrder'>{{ order.totalOrder }}</label>
     </div>
     </br>
     <div class="form-control">
         {{ form.totalPayment.label_tag }}
-        <label id='totalPayment'>{{ form.totalPayment.value }}</label>
-        <div class="invalid-feedback">
-            {{ form.totalPayment.errors }}
-        </div>
+        <label id='totalPayment'>{{ order.totalPayment }}</label>
     </div>
 </div>

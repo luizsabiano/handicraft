@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Detalhes do Cartão Dedelidade {{ loyatyCard.id }}
+{% endblock %}
+
+{% block content %}
+<div class="container" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+     xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+        <h3> Detalhes do Cartão Fidelidade</h3>
+        </br>
+        <div class="form-group">
+            <div class="row">
+                <div  id="head" class="col-sm-9" >
+                    <div class='form-control'>
+                        <span class='label label-default' style='font-size:11px;'>
+                            <strong>
+                                {% if loyatyCard.client.cakeMaker%}
+                                    Boleira
+                                {% else %}
+                                    cliente
+                                {% endif %}
+                            </strong>
+                        </span>
+                        <span class='label label-default' style='font-size:14px;'  >
+                            <a href="{% url 'order_control:client_detail'  loyatyCard.client.id %}">
+                                <strong>{{ loyatyCard.client.name }}</strong></span>
+                            </a>
+                    </div>
+                    <div class='form-control'>
+                        <span class='label label-default' style='font-size:11px;'><strong>Cartão Fidelidade  </strong></span>
+                        <span class='label label-default' style='font-size:14px;' ><strong>{{ loyatyCard.id }}</strong></span>
+                    </div>
+                    </br>
+                    <div class='form-control loyatyCard'  >
+                        <div class="row" >
+                            {% for adhesive in adhesives %}
+                                {% if forloop.counter == 6 %}
+                                    </div>
+                                    <div class="row" >
+                                {% endif %}
+                                     <a href="{% url 'order_control:order_items_details' adhesive.topOfCake.id %}">
+                                    <div id="adhesive{{ adhesive.id}}" class="col adhesive" ></div>
+                                 </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock %}

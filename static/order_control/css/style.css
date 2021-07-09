@@ -8,12 +8,47 @@
 
 }
 
-body{
-    #background-image: url("/media/lineMimos/foto_perfil.jpg");
-    #background-position: center; /* Center the image */
-    #background-repeat: no-repeat; /* Do not repeat the image */
-    #background-size: cover ; /* Resize the background image to cover the entire container */
 
+.container_login {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center
+
+}
+
+.loyatyCard {
+    min-height: 300px;
+    min-width: 620px;
+    background-image: url("/media/lineMimos/mockup_com_Fundo.jpg");
+    background-position: center; /* Center the image */
+    background-repeat: repeat; /* Do not repeat the image */
+    background-size: contain ; /* Resize the background image to cover the entire container */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.adhesive{
+    border: 1px solid;
+    padding: 10px;
+    border-radius: 15px;
+    border-color: #fe1bfcff;
+    box-shadow: 1px 1px 6px 3px #fe1bfcff;
+
+    height: 90px;
+    width: 105px;
+    margin: 0.2%;
+
+    cursor: pointer;
+
+    background-image: url("/media/lineMimos/sda.png");
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: contain ; /* Resize the background image to cover the entire container */
 }
 
 #centralizer{

@@ -14,27 +14,34 @@
                 <th>Nome</th>
                 <th>Telefone</th>
                 <th>Boleira</th>
-                <th>Foto</th>
                 <th>Balanço</th>
                 <th>Ações</th>
             </tr>
             </thead>
             <tbody>
-            {% for client in clients %}
+            {% for client in object_list %}
                 <tr>
-                    <td>{{ client.id }}</td>
+                    <td><a href="{% url 'order_control:client_detail' client.id %}">{{ client.id }}<a></td>
                     <td>{{ client.name }}</td>
-                    <td>{{ client.phone }}</td>
-                    <td>{{ client.cakeMaker }}</td>
-                    <td><img src="{{ MEDIA_URL}}{{ client.picture }}" width="50" height="60" ></td>
+                    <td>({{ client.phone|slice:"0:2"}}) {{ client.phone|slice:"2:7"}}-{{ client.phone|slice:"7:"}}</td>
+                    <td>{% if  client.cakeMaker %}
+                            Sim
+                        {% else %}
+                            Não
+                        {% endif %}
+                    </td>
+                    <!-- <td><img src="{{ MEDIA_URL}}{{ client.picture }}" width="50" height="60" ></td> -->
                     <td>{{ client.balance }}</td>
                     <td>
-                        <a href="{% url 'order_control:client_update' client.id %}">Editar<a> |
-                        <a href="{% url 'order_control:client_destroy' client.id %}">Excluir<a>
+                        <a href="{% url 'order_control:client_update' client.id %}">Editar</a> |
+                        <a href="{% url 'order_control:client_destroy' client.id %}">Excluir</a>
                     </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+
+
+
     </div>
 {% endblock %}

@@ -52,7 +52,7 @@
 
             addNewDiv("", "h4", cliente , "<strong>{{ client }}</strong>" );
             addNewDiv("", geralTag, "Entrega em ", deliveryAt );
-            addNewDiv("", geralTag, "Entrada: R$ ", parseFloat("{{order.downPayment}}").toFixed(2));
+            addNewDiv("", geralTag, "Total Pago: R$ ", parseFloat("{{order.totalPayment}}").toFixed(2));
             addNewDiv("totalOrder", geralTag, "Total Pedido: R$ ", parseFloat("{{order.totalOrder}}").toFixed(2));
             addNewDivPhoto("{{ client.picture }}");
             addNewDivDescription( geralTag, "Descrição: ", "{{order.description|linebreaks }}");

@@ -51,7 +51,15 @@
         <div class="invalid-feedback">
             {{ box_top_form.amount.errors }}
         </div>
+
+        {{ box_top_form.gift.label_tag }}
+        {{ box_top_form.gift }}
+        <div class="invalid-feedback">
+            {{ box_top_form.gift.errors }}
+        </div>
     </div>
+
+
 </div>
 
 {% if order.id is not none  %}

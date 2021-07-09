@@ -1,0 +1,10 @@
+version: '2'
+services:
+    lineMimos:
+        build: .
+        image: django-sandbox:latest
+        command: python manage.py runserver 0.0.0.0:8001
+        volumes:
+            - .:/code
+        ports:
+            - "8000:8000"

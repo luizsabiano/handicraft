@@ -12,7 +12,7 @@
         </h3>
         </br>
 
-        <form action="{% url 'order_control:client_destroy' client.id %}" method="post">
+        <form action="{% url 'order_control:client_destroy' client.pk %}" method="post">
             {% csrf_token %}
             <fieldset disabled>
                 {% include 'order_control/client/form.html' %}

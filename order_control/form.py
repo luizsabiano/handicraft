@@ -1,6 +1,6 @@
 from django import forms
 
-from order_control.models import Client, Order, BoxTop
+from order_control.models import Client, Order, BoxTop, Payment
 
 
 class ClientForm(forms.ModelForm):
@@ -39,4 +39,15 @@ class BoxTopForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descrição'}),
             'storedIn': forms.FileInput(attrs={'class': 'form-control', 'required': False, 'placeholder': 'Foto'})
         }
-        fields = ('type', 'theme', 'birthdayName', 'amount', 'description', 'storedIn')
+        fields = ('type', 'theme','gift', 'birthdayName', 'amount', 'description', 'storedIn')
+
+
+class PaymentForm(forms.ModelForm):
+
+    class Meta:
+        model = Payment
+        widgets = {
+            'type': forms.Select(attrs={'class': 'form-control'}),
+            'createAt': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}),
+        }
+        fields = ('createAt', 'type', 'amount', 'downPayment')

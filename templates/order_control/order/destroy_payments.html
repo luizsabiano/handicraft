@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}Excluir Pagamento{% endblock %}
+
+{% block content %}
+    <div class="container">
+        </br>
+        <h3>Excluir Pagamento {{ payment.order }} </h3> </br></br>
+        </br>
+
+        <form action="{% url 'order_control:payment_destroy' payment.id %}" method="post">
+            {% csrf_token %}
+            <fieldset disabled>
+                {% include 'order_control/order/form_payment.html' %}
+            </fieldset>
+
+            <button type="submit" class="btn btn-danger">Excluir</button>
+            <a href="{% url 'order_control:order_payment' payment.order.id %}"> <div class="btn btn-primary">Voltar</div></a>
+        </form>
+
+
+    </div>
+{% endblock %}

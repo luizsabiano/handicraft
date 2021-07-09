@@ -4,14 +4,15 @@
 
 {% block content %}
     <div class="container">
-        <h3>Editar Pedido </h3> </br></br>
+        <h3>Editar Pedido </h3> </br>
 
-        </br>
+
         <form enctype="multipart/form-data" action="{% url 'order_control:order_update' order.id %}"
               method="post" {% if form_submitted %}class="was-validated" {% endif %}>
             {% csrf_token %}
             {% include 'order_control/order/form.html' %}
             <button type="submit" class="btn btn-primary">Salvar | Inserir Novos Itens</button>
+            <a href="{% url 'order_control:order_payment' order.id %}"> <div class="btn btn-primary">Recebimentos</div></a>
             <a href="{% url 'order_control:order_list' %}"> <div class="btn btn-primary">Voltar</div></a>
         </form>
         </br></br>

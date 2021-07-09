@@ -25,15 +25,23 @@ urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('', views.HomeView.as_view(), name='homeView'),
     path('client/', views.ClientCreateView.as_view(), name='client_create'),
-    path('clients/', views.client_list, name='client_list'),
-    path('clients/<int:id>/update/', views.client_update, name='client_update'),
+    path('clients/', views.ClientListView.as_view(), name='client_list'),
+    path('clients/<int:pk>/update/', views.ClientUpdateView.as_view(), name='client_update'),
     path('clients/<int:id>/destroy/', views.client_destroy, name='client_destroy'),
+    path('clients/<int:id>/detail/', views.client_details, name='client_detail'),
 
     path('order/', views.order_create, name='order_create'),
-    path('orders/', views.order_list, name='order_list'),
+    path('orders/', views.OrderListView.as_view(), name='order_list'),
     path('order_add_items/', views.order_add_items, name='order_add_items'),
     path('orders/<int:id>/update/', views.order_update, name='order_update'),
+    path('orders/<int:id>/payment/', views.order_payment, name='order_payment'),
+    path('orders/<int:id>/payment_destroy/', views.payment_destroy, name='payment_destroy'),
     path('orders/<int:id>/destroy/', views.order_destroy, name='order_destroy'),
+    path('orders/<int:id>/detail/', views.order_details, name='order_detail'),
+    path('orders/<int:id>/order_items_details/', views.order_items_details, name='order_items_details'),
+
+    path('orders/<int:id>/loyatyCard_details/', views.loyatyCard_details, name='loyatyCard_details'),
+
     path('orders/items/<int:id>/destroy/', views.order_items_destroy, name='order_items_destroy'),
     path('orders/items/<int:id>/update/', views.order_items_update, name='order_items_update'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

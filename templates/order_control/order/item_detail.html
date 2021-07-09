@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Detalhes do Pedido {{ order_item.order.id }} - Item:  {{ order_item.id }}
+{% endblock %}
+
+{% block content %}
+<div class="container" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+        <h3> Detalhes do Item:  {{ order_item.id }}
+        <div class="form-group">
+            <div class="row">
+                <div  id="head" class="col-sm-9" >
+                    <div class='form-control'>
+                        <span class='label label-default' style='font-size:11px;'>
+                            <strong>
+                                {% if order_item.order.client.cakeMaker%}
+                                    Boleira
+                                {% else %}
+                                    cliente
+                                {% endif %}
+                            </strong>
+                        </span>
+                        <span class='label label-default' style='font-size:14px;'  >
+                            <a href="{% url 'order_control:client_detail'  order_item.order.client.id %}">
+                                <strong>{{ order_item.order.client.name }}</strong></span>
+                            </a>
+                    </div>
+                    <div class='form-control'>
+                        <span class='label label-default' style='font-size:11px;'><strong>Pedido</strong></span>
+                        <a href="{% url 'order_control:order_detail'  order_item.order.id %}">
+                                <span class='label label-default' style='font-size:14px;' ><strong>{{ order_item.order.id }}</strong></span>
+                        </a>
+
+                    </div>
+                    <div class='form-control'>
+                        <span class='label label-default' style='font-size:11px;'><strong>tema</strong></span>
+                        <span class='label label-default' style='font-size:14px;' ><strong>{{ order_item.theme }}</strong></span>
+                         &nbsp; &nbsp; - &nbsp; &nbsp;
+                        <span class='label label-default' style='font-size:11px;'><strong>Valor</strong></span>
+                        <span class='label label-default' style='font-size:14px;' ><strong>{{ order_item.amount }}</strong></span>
+                        &nbsp; &nbsp; - &nbsp; &nbsp;
+                        <span class='label label-default' style='font-size:11px;'><strong>Aniversariante</strong></span>
+                        {% if order_item.birthdayName%}
+                            <span class='label label-default' style='font-size:14px;' ><strong>{{ order_item.birthdayName }}</strong></span>
+                        {% endif%}
+                    </div>
+                    <div class='form-control'>
+                        <span class='label label-default' style='font-size:11px;'><strong>Descrição</strong></span>
+                        {% if order_item.description%}
+                            <span class='label label-default' style='font-size:14px;' ><strong>{{ order_item.description }}</strong></span>
+                        {% endif %}
+                    </div>
+                    {% if order_item.storedIn%}
+                        </br></br>
+                        <div id="photo" class="col-sm-3">
+                            <img src='{{ MEDIA_URL}}{{ order_item.storedIn }}' width="100%" height="100%">
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+    </div>
+{% endblock %}

@@ -15,14 +15,19 @@
                 <th>Data Entrega</th>
                 <th>Cliente</th>
                 <th>Entregue</th>
-                <th>Entrada</th>
+                <th>Total Pedido</th>
+                <th>Total Pago</th>
                 <th>Ações</th>
             </tr>
             </thead>
             <tbody>
-            {% for order in orders %}
+            {% for order in object_list %}
                 <tr>
-                    <td>{{ order.id }}</td>
+                    <td>
+                        <a href="{% url 'order_control:order_detail' order.id %}">
+                                <span class='label label-default' style='font-size:14px;' ><strong>{{ order.id }}</strong></span>
+                        </a>
+                    </td>
                     <td>{{ order.createdAt|date:"SHORT_DATE_FORMAT" }}</td>
                     <td>{{ order.deliveryAt|date:"SHORT_DATE_FORMAT" }}</td>
                     <td>{{ order.client.name }}</td>
@@ -32,7 +37,8 @@
                             Não
                         {% endif %}
                     </td>
-                    <td>{{ order.downPayment }}</td>
+                    <td>{{ order.totalOrder }}</td>
+                    <td>{{ order.totalPayment }}</td>
                     <td>
                         <a href="{% url 'order_control:order_update' order.id %}">Editar<a> |
                         <a href="{% url 'order_control:order_destroy' order.id %}">Excluir<a>
