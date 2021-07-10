@@ -1,5 +1,5 @@
 # Container base: python 3.6 Alpine Linux
-FROM python:3.9-alpine
+FROM python:3.8-slim
 
 ENV PYTHONUNBUFFERED 1
 

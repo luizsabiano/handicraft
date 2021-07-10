@@ -1,8 +1,7 @@
 version: '2'
 services:
-    lineMimos:
+    line-mimos:
         build: .
-        image: django-sandbox:latest
         command: python manage.py runserver 0.0.0.0:8001
         volumes:
             - .:/code
