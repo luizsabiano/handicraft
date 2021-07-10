@@ -20,7 +20,7 @@ class Client (models.Model):
     createAt = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255, verbose_name='Nome do Cliente')
     phone = models.CharField(max_length=15, null=True, blank=True, verbose_name='Telefone')
-    picture = models.ImageField(upload_to='clients/', null=True, blank=True, verbose_name='Foto de Perfil')
+    picture = models.FileField(upload_to='clients/', null=True, blank=True, verbose_name='Foto de Perfil')
     balance = models.DecimalField(max_digits=8, decimal_places=2, default=0.0, verbose_name='Balanço')
     cakeMaker = models.BooleanField(default=False, verbose_name='Boleira')
 
@@ -57,7 +57,7 @@ class BoxTop(models.Model):
     birthdayName = models.CharField(max_length=255, null=True, blank=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00, verbose_name='Valor total das Caixas R$')
     description = models.CharField(max_length=255, null=True, blank=True)
-    storedIn = models.ImageField(upload_to='boxes/', null=True, blank=True, verbose_name='Figura')
+    storedIn = models.FileField(upload_to='boxes/', null=True, blank=True, verbose_name='Figura')
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
 
 
