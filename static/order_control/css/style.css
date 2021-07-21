@@ -51,6 +51,7 @@
     background-size: contain ; /* Resize the background image to cover the entire container */
 }
 
+
 #centralizer{
     width: 600px;
     text-align:center !important;
@@ -100,16 +101,22 @@
 
 }
 
+.navbar-expand{
+    -sm|-md|-lg|-xl
+}
+
+
 .textMenu {
     display: block;
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
     color: #fe1bfcff;
-    font-size: 18px;
+    font-size: 20px;
     line-height: 40px;
     vertical-align: middle;
 
 }
+
 
 .textMenu:hover {
     color: #f58bfcff;

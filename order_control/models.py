@@ -84,9 +84,9 @@ class Adhesive (models.Model):
 
 
 class Payment (models.Model):
-    type = models.CharField(max_length=255, choices=PAYMENT_CHOICES)
+    type = models.CharField(max_length=255, choices=PAYMENT_CHOICES, verbose_name="Tipo")
     createAt = models.DateField(auto_now_add=False, verbose_name="Pago em")
-    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    amount = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Valor")
     downPayment = models.BooleanField(default=False, verbose_name='Entrada')
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
 

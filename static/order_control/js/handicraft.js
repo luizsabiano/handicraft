@@ -35,7 +35,7 @@ $(function(){
             valor = dados[i]['fields']['amount'];
             this.totalOrder = parseFloat(this.totalOrder) + parseFloat(valor);
             bodyTable =  bodyTable + '<tr> <th>'+ tipo + '</th> <th>'+ tema + '</th> <th>'+ aniversariante + '</th> <th>'+
-            valor + '</th> <th><a href="../../items/'+ pk +'/update/">Editar<a> | <a href="../../items/'+ pk +'/destroy/">Excluir<a></th> </tr>';
+            valor + '</th> <th><a href="../../orders/items/'+ pk +'/update/">Editar<a> | <a href="../../orders/items/'+ pk +'/destroy/">Excluir<a></th> </tr>';
         }
         $("#divTableItems").html(headTable + bodyTable + fotterTable)
         $("#totalOrder").html(this.totalOrder.toFixed(2))
