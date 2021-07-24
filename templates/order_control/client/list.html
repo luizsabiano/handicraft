@@ -3,45 +3,124 @@
 {% block title %}Lista de clientes{% endblock %}
 
 {% block content %}
-    <div class="container">
+    <div class="container" id="app">
         <h3>Lista de Clientes</h3></br>
-        <a href="{% url 'order_control:client_create' %}" class="btn btn-primary">Novo Cliente</a>
-        <br/><br/>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Telefone</th>
-                <th>Boleira</th>
-                <th>Balanço</th>
-                <th>Ações</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for client in object_list %}
+        <div class="row">
+            <div class="col"><a href="{% url 'order_control:client_create' %}" class="btn btn-primary">Novo Cliente</a></div>
+            <div class="col">
+                <input type="checkbox" id="cakeMaker" v-model="isChecked">
+                <label for="cakeMaker">Exibir somente Boleiras </label>
+            </div>
+            <div class="col">
+                <input type="checkbox" id="checkbox" v-model="isDebtor">
+                <label for="checkbox">Somente não Quitadas </label>
+            </div>
+        </div>
+        <br/>
+        <div >
+            <table class="table">
+                <thead>
                 <tr>
-                    <td><a href="{% url 'order_control:client_detail' client.id %}">{{ client.id }}<a></td>
-                    <td>{{ client.name }}</td>
-                    <td>({{ client.phone|slice:"0:2"}}) {{ client.phone|slice:"2:7"}}-{{ client.phone|slice:"7:"}}</td>
-                    <td>{% if  client.cakeMaker %}
-                            Sim
-                        {% else %}
-                            Não
-                        {% endif %}
-                    </td>
-                    <!-- <td><img src="{{ MEDIA_URL}}{{ client.picture }}" width="50" height="60" ></td> -->
-                    <td>{{ client.balance }}</td>
-                    <td>
-                        <a href="{% url 'order_control:client_update' client.id %}">Editar</a> |
-                        <a href="{% url 'order_control:client_destroy' client.id %}">Excluir</a>
-                    </td>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Boleira</th>
+                    <th>Balanço</th>
+                    <th>Ações</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <tr v-for="client in clientsFilter">
+                        <td> <a :href="client.url_detail">[[ client.id ]]</a></td>
+                        <td>[[ client.name ]]</td>
+                        <td>[[ client.phone ]]</td>
+                        <td>[[ client.cakeMaker ]]</td>
+                        <td>[[ client.balance ]]</td>
+                        <td>
+                            <a :href="client.url_update">Editar</a> |
+                            <a :href="client.url_destroy">Excluir</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
 
 
     </div>
+
+
+    {% load static %}
+    <script type="text/javascript" src="{% static '/order_control/js/lib/vue.js' %}"></script>
+    <script type="text/javascript" src="{% static '/order_control/js/lib/lodash.min.js' %}"></script>
+
+    <script>
+        class Client {
+            constructor(id, name, phone, cakeMaker, balance, url_detail, url_update, url_destroy){
+                this.id = id;
+                this.name = name;
+                this.phone = phone;
+                this.cakeMaker = cakeMaker;
+                this.balance = balance;
+                this.url_detail = url_detail;
+                this.url_update = url_update;
+                this.url_destroy = url_destroy;
+            }
+        }
+
+       Clients = [];
+
+        {% for client in object_list %}
+            client = new Client( '{{ client.id }}', '{{ client.name }}',
+                '({{ client.phone|slice:"0:2"}}) {{ client.phone|slice:"2:7"}}-{{ client.phone|slice:"7:"}}',
+                '{% if  client.cakeMaker %}Sim{% else %}Não{% endif %}', '{{ client.balance }}',
+                '{% url 'order_control:client_detail' client.id %}',
+                '{% url 'order_control:client_update' client.id %}',
+                '{% url 'order_control:client_destroy' client.id %}');
+            Clients.push(client);
+        {% endfor %}
+    </script>
+
+
+
+    <script>
+        new Vue ({
+            delimiters: ["[[", "]]"],
+            el: "#app",
+            data: {
+                vue_clients: Clients,
+                isChecked: false,
+                isDebtor: true,
+                busca: '',
+                ordem: {
+                  colunas: ['cakeMaker'],
+                  orientacao: ['desc']
+                }
+            },
+            computed: {
+                clientsFilter(){
+
+                    var clients =  _.orderBy(this.vue_clients, this.ordem.colunas, this.ordem.orientacao);
+                    if (this.isDebtor)
+                        clients = _.filter(clients, function(o) { return o.balance != '0,00'; });
+                    if (this.isChecked)
+                        clients = _.filter(clients, ['cakeMaker', 'Sim' ]);
+                    return clients;
+
+                }
+            },
+
+            methods: {
+                showCustumerDoc(indexCustumer) {
+                    var x = document.getElementById(indexCustumer);
+                    if (x.style.display === "none") {
+                        x.style.display = "block";
+                    } else {
+                        x.style.display = "none";
+                    }
+
+                    },
+            },
+        })
+    </script>
 {% endblock %}
