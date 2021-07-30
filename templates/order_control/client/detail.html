@@ -93,6 +93,7 @@
                                     <th>Adesivos</th>
                                     <th>Data Brinde</th>
                                     <th>Brinde</th>
+                                    <th>Entregue</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -114,6 +115,11 @@
                                                 <a href="{% url 'order_control:order_items_details'  loyatyCard.giftTopOfCake.id %}"> {{loyatyCard.giftTopOfCake.theme}}
                                                 </a>
 
+                                            {% endif %}
+                                        </td>
+                                        <td>{% if loyatyCard.isDelivered %}
+                                                Sim
+                                            {% else %} Não
                                             {% endif %}
                                         </td>
                                     </tr>

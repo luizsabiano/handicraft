@@ -323,3 +323,15 @@ def loyatyCard_details(request, id):
     loyatyCard = LoyatyCard.objects.get(id=id)
     adhesives = Adhesive.objects.filter(loyatyCard=loyatyCard)
     return render(request, 'order_control/order/loyatyCard_details.html', {'loyatyCard': loyatyCard, 'adhesives':adhesives})
+
+
+def loyatyCard_update(request, id):
+    isDelivered = request.POST.get('message').capitalize()
+    loyatyCard = LoyatyCard.objects.get(id=id)
+    loyatyCard.isDelivered = isDelivered
+    loyatyCard.save()
+    message = {"message": 'sucesso'}
+    return HttpResponse(
+        json.dumps(message),
+        content_type="application/json"
+    )

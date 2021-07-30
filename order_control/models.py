@@ -6,11 +6,14 @@ PAYMENT_CHOICES = (
     ('CC', 'Cartão de Crédito'),
     ('CD', 'Cartão de Débito'),
     ('CASH', 'Dinheiro'),
+    ('cc', 'Depósito'),
 )
 
 BOX_TOP_CHOICES = (
     ('TOPO', 'TOPO DE BOLO'),
     ('CAIXA', 'CAIXA BOX'),
+    ('Tag', 'Tag'),
+    ('outros', 'Outros'),
 )
 
 
@@ -72,6 +75,7 @@ class LoyatyCard(models.Model):
     giftDate = models.DateTimeField(null=True,  blank=True)
     giftTopOfCake = models.ForeignKey(BoxTop, on_delete=models.PROTECT, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    isDelivered = models.BooleanField(default=False, verbose_name="Está entregue?")
 
 
 # A cada compra de topo a boleira ganha um adesivo
