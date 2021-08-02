@@ -4,7 +4,8 @@ from django.contrib.auth import authenticate, login as django_login, logout as d
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
-from django.http import HttpResponse
+from django.db.models import Sum
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -12,6 +13,9 @@ from django.views.generic import TemplateView, CreateView, ListView, DeleteView,
 
 from order_control.form import ClientForm, OrderForm, BoxTopForm, PaymentForm
 from order_control.models import Client, Order, BoxTop, LoyatyCard, Adhesive, Payment
+
+from datetime import date, datetime
+import calendar
 
 
 class LoginView(TemplateView):
@@ -23,7 +27,6 @@ class LoginView(TemplateView):
         user = authenticate(username=username, password=password)
 
         if user:
-            print(vars(user))
             django_login(request, user)
             return redirect('/')  # redirect é um atalho para HttpResponseRedirect
         message = 'Credenciais Inválidas'
@@ -33,9 +36,32 @@ class LoginView(TemplateView):
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'order_control/index.html'
 
+    def get(self, request, *args, **kwargs):
+        currentDate = date.today()
+        initialDate = currentDate.strftime('%Y-%m') + '-01'
+        monthRange = calendar.monthrange(currentDate.year, currentDate.month)
+        finalDate = currentDate.strftime('%Y-%m') + '-' + str(monthRange[1])
+
+        payments = Payment.objects.filter(createAt__range=(initialDate, finalDate))
+        totalPayments = payments.aggregate(Sum('amount'))
+        return self.render_to_response({'payments': payments, 'totalPayments': totalPayments})
+
+    def post(self, request, *args, **kwargs):
+        dataConsulta = request.POST.get('message')
+        baseDate = datetime.strptime(dataConsulta + '-01', '%Y-%m-%d').date()
+        initialDate = baseDate.strftime("%Y-%m-%d")
+        monthRange = calendar.monthrange(baseDate.year, baseDate.month)
+
+        finalDate = datetime.strptime(dataConsulta + '-' + str(monthRange[1]), '%Y-%m-%d').date().strftime("%Y-%m-%d")
+        payments = Payment.objects.filter(createAt__range=(initialDate, finalDate))
+        totalPayments = payments.aggregate(Sum('amount'))
+        return JsonResponse({'payments': list(payments.values('id', 'type', 'createAt', 'amount' , 'order__client__id',
+                                                             'order__client__name', 'order__client__cakeMaker',
+                                                             'order__client__balance')),
+                             'totalPayments': totalPayments})
+
 
 class FormSubmittedIncontextMixin:
-
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form, form_submitted=True))
 

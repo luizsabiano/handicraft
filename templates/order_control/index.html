@@ -4,4 +4,203 @@
 
 {% block content %}
 
+
+<div class="container" id="app">
+    <br/>
+    <div class="row justify-content-md-center">
+         <div class="row">
+             <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example"  v-model="yearSelected">
+              <option v-for="(year, key) in years" :selected="year == yearSelected">[[year]]</option>
+            </select>
+            <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" @change="onChange">
+              <option :value="yearSelected + '-' + parseInt(key +1) " v-for="(month, key) in months" :selected="months[(key)] == monthSelected">[[month]] / [[yearSelected]]</option>
+            </select>
+         </div>
+    </div>
+
+    <br/><br/><br/>
+    <div class="row justify-content-md-center"><h3>Total mensal: <span class="badge badge-secondary"> R$ [[ vue_totalMensal ]] <span></h3> </div>
+
+        <div id="piechart" style="width: 900px; height: 500px;">
+            <ul v-for="payment in paymentsFilter"></ul>
+        </div>
+
+
+
+</div>
+
+    {% load static %}
+    <script type="text/javascript" src="{% static '/order_control/js/lib/vue.js' %}"></script>
+    <script type="text/javascript" src="{% static '/order_control/js/lib/lodash.min.js' %}"></script>
+    <script type="text/javascript" src="{% static '/order_control/js/lib/loader.js' %}"></script>
+
+    <script>
+        class Client {
+            constructor(id, name, cakeMaker, balance, url_detail){
+                this.id = id;
+                this.name = name;
+                this.cakeMaker = cakeMaker;
+                this.balance = balance;
+                this.url_detail = url_detail;
+            }
+        }
+
+        class Payment {
+            constructor(id, type, createAt, amount, client){
+                this.id = id;
+                this.type = type;
+                this.createAt = createAt;
+                this.amount = amount;
+                this.client = client;
+            }
+        }
+
+
+       var totalMensal = '{{ totalPayments.amount__sum|floatformat:2}}';
+
+       function loadData(){
+           Payments = [];
+           var repeated = false;
+            {% for payment in payments %}
+
+                Payments.forEach(function(paymentJs, id) {
+                    if (paymentJs.client.id == '{{ payment.order.client.id }}'){
+                        repeated = true;
+                        Payments[id].amount = parseFloat(Payments[id].amount) + parseFloat('{{ payment.amount }}');
+                        return;
+                    }
+                })
+
+                if (!repeated){
+                    client = new Client( '{{ payment.order.client.id }}', '{{ payment.order.client.name }}',
+                    '{% if  payment.order.client.cakeMaker %}Sim{% else %}Não{% endif %}', '{{ payment.order.client.balance }}',
+                    '{% url 'order_control:client_detail' payment.order.client.id %}');
+
+                    payment = new Payment('{{ payment.id }}', '{{ payment.type }}', '{{ payment.createAt }}',
+                    parseFloat('{{ payment.amount }}'), client);
+                    Payments.push(payment);
+                    repeated = false;
+                }
+                else{
+                    repeated = false;
+
+                }
+
+            {% endfor %}
+            return Payments;
+       }
+       Payments2 = loadData();
+
+       function loadData2(paymentList){
+           Payments = [];
+           var repeated = false;
+           paymentList.forEach(function(payment, idItem){
+
+                 Payments.forEach(function(paymentJs, id) {
+                    if (paymentJs.client.id == payment['order__client__id']){
+                        repeated = true;
+                        Payments[id].amount = parseFloat(Payments[id].amount) + parseFloat('{{ payment.amount }}');
+                        return;
+                    }
+                })
+
+                if (!repeated){
+                    client = new Client(payment['order__client__id'], payment['order__client__name'],
+                    payment['order__client__cakeMaker'], payment['order__client__balance'],
+                    payment['order__client__id']);
+
+                    payment = new Payment(payment['id'], payment['type'], payment['createAt'],
+                    parseFloat(payment['amount']), client);
+                    Payments.push(payment);
+                    repeated = false;
+                }
+                else{
+                    repeated = false;
+
+                }
+            })
+            return Payments
+       }
+
+    </script>
+
+    <script>
+    let data = new Date();
+    let meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro' ]
+    var teste = null;
+        new Vue ({
+            delimiters: ["[[", "]]"],
+            el: "#app",
+            data: {
+                months: meses,
+                monthSelected: meses[data.getMonth()],
+                years: [2021, 2022, 2023, 2024, 2025, 2026, 2026, 2028, 2029, 2030],
+                yearSelected: data.getFullYear(),
+                vue_payments: Payments2,
+                vue_totalMensal : totalMensal,
+                ordem: {
+                  colunas: ['amount'],
+                  orientacao: ['desc']
+                }
+            },
+            methods: {
+               onChange(event) {
+               var vm = this;
+                 $.ajax({
+                   "type": "POST",
+                    "dataType": "json",
+                    "url": "",
+                    "data": {'message': event.target.value},
+                    "success": function(message) {
+
+                        this.vue_payments = loadData2(message.payments);
+                        teste =  _.orderBy(this.vue_payments, 'amount', 'desc');
+                        drawChart();
+                        vm.vue_totalMensal = message.totalPayments.amount__sum;
+                    },
+                 });
+               }
+            },
+            computed: {
+                paymentsFilter(){
+                    var payments =  _.orderBy(this.vue_payments, this.ordem.colunas, this.ordem.orientacao);
+                    teste = payments;
+                    return payments;
+                }
+            },
+        })
+
+        function vueObjectToArray(o){
+            array = [];
+            array.push(['Cliente', 'Valor']);
+            for (key in o){
+                array.push([o[key].client.name , parseFloat(o[key].amount)]);
+            }
+            return array;
+        }
+
+
+    </script>
+
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable(vueObjectToArray(teste));
+
+        var options = {
+          title: 'Clientes x Arrecadação Mensal',
+          is3D: true,
+          //pieHole: 0.4,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
 {% endblock %}
