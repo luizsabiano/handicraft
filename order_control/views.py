@@ -36,16 +36,6 @@ class LoginView(TemplateView):
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'order_control/index.html'
 
-    def get(self, request, *args, **kwargs):
-        currentDate = date.today()
-        initialDate = currentDate.strftime('%Y-%m') + '-01'
-        monthRange = calendar.monthrange(currentDate.year, currentDate.month)
-        finalDate = currentDate.strftime('%Y-%m') + '-' + str(monthRange[1])
-
-        payments = Payment.objects.filter(createAt__range=(initialDate, finalDate))
-        totalPayments = payments.aggregate(Sum('amount'))
-        return self.render_to_response({'payments': payments, 'totalPayments': totalPayments})
-
     def post(self, request, *args, **kwargs):
         dataConsulta = request.POST.get('message')
         baseDate = datetime.strptime(dataConsulta + '-01', '%Y-%m-%d').date()
