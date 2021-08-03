@@ -11,12 +11,18 @@ $(window).load(function() {
                 vm.vue_payments = groupByData(message.payments, 'client');
                 vm.vue_payments =  _.orderBy(vm.vue_payments, 'amount', 'desc');
                 drawChart(vm.vue_payments);
-                vm.vue_totalMensal = message.totalPayments.amount__sum;
+                vm.vue_totalMensal = totalMensalCalc(vm.vue_payments);
             },
      });
 });
 
-
+function totalMensalCalc(payments){
+    total = 0;
+    payments.forEach(function(payment) {
+        total += payment.amount;
+    })
+    return total;
+}
 
 //Agrupa dados por item "groupBy"
 function groupByData(paymentList, groupBy){
@@ -28,7 +34,7 @@ function groupByData(paymentList, groupBy){
              Payments.forEach(function(paymentJs, id) {
                 if (paymentJs.client.id == payment['order__client__id']){
                     repeated = true;
-                    Payments[id].amount = parseFloat(Payments[id].amount) + parseFloat('{{ payment.amount }}');
+                    Payments[id].amount = parseFloat(Payments[id].amount) + parseFloat(payment['amount']);
                     return;
                 }
             })
@@ -50,6 +56,8 @@ function groupByData(paymentList, groupBy){
     })
     return Payments
 }
+
+
 
 // Gráfico Google tipo pizza
 

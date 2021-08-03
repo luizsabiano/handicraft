@@ -1,4 +1,3 @@
-Payments2 = []
 
 let meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro' ]
 var teste = null;
@@ -11,7 +10,8 @@ var vm = new Vue ({
         years: [2021, 2022, 2023, 2024, 2025, 2026, 2026, 2028, 2029, 2030],
         yearSelected: data.getFullYear(),
         vue_payments: '',
-        vue_totalMensal : '',
+        vue_totalMensal: 0,
+        isChecked: false,
         ordem: {
           colunas: ['amount'],
           orientacao: ['desc']
@@ -19,24 +19,31 @@ var vm = new Vue ({
     },
     methods: {
        onChange(event) {
-       var vm = this;
-       console.log('mensagem evento: ', event.target.value)
-         $.ajax({
-           "type": "POST",
-            "dataType": "json",
-            "url": "",
-            "data": {'message': event.target.value},
-            "success": function(message) {
+             $.ajax({
+               "type": "POST",
+                "dataType": "json",
+                "url": "",
+                "data": {'message': event.target.value},
+                "success": function(message) {
+                    vm.vue_payments = groupByData(message.payments, 'client');
+                    vm.vue_payments =  _.orderBy(vm.vue_payments, 'amount', 'desc');
+                    vm.vue_totalMensal = totalMensalCalc(vm.vue_payments);
+                    drawChart(vm.vue_payments);
+                },
+             });
+       },
+       onChangeCheckbox(event){
+            var payments = vm.vue_payments;
+            if (this.isChecked)
+                payments = _.filter(payments, ['client.cakeMaker', true ]);
+            vm.vue_totalMensal = totalMensalCalc(payments);
+            drawChart(payments);
 
-                this.vue_payments = groupByData(message.payments, 'client');
-                this.vue_payments =  _.orderBy(this.vue_payments, 'amount', 'desc');
-                drawChart(this.vue_payments);
-                vm.vue_totalMensal = message.totalPayments.amount__sum;
-            },
-         });
        }
     },
 })
+
+
 
 function vueObjectToArray(o){
     array = [];

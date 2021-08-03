@@ -15,6 +15,10 @@
             <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" @change="onChange">
               <option :value="yearSelected + '-' + parseInt(key +1) " v-for="(month, key) in months" :selected="months[(key)] == monthSelected">[[month]] / [[yearSelected]]</option>
             </select>
+            <div class="col">
+                <input type="checkbox" id="cakeMaker" @change="onChangeCheckbox" v-model="isChecked">
+                <label for="cakeMaker">Exibir somente Boleiras </label>
+            </div>
          </div>
     </div>
 
