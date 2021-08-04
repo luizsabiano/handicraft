@@ -9,7 +9,9 @@ var vm = new Vue ({
         monthSelected: meses[data.getMonth()],
         years: [2021, 2022, 2023, 2024, 2025, 2026, 2026, 2028, 2029, 2030],
         yearSelected: data.getFullYear(),
-        vue_payments: '',
+        vue_payments: 0,
+        vue_paymentsgroupByDate: 0,
+        vue_paymentsgroupByDateNoFilter: 0,
         vue_totalMensal: 0,
         isChecked: false,
         ordem: {
@@ -25,10 +27,19 @@ var vm = new Vue ({
                 "url": "",
                 "data": {'message': event.target.value},
                 "success": function(message) {
+                    vm.isChecked = false;
                     vm.vue_payments = groupByData(message.payments, 'client');
                     vm.vue_payments =  _.orderBy(vm.vue_payments, 'amount', 'desc');
                     vm.vue_totalMensal = totalMensalCalc(vm.vue_payments);
-                    drawChart(vm.vue_payments);
+                    drawChartPizza(vm.vue_payments);
+
+
+                    vm.vue_paymentsgroupByDateNoFilter = groupByData(message.payments, '');
+
+                    vm.vue_paymentsgroupByDate = groupByData(message.payments, 'date');
+                    vm.vue_paymentsgroupByDate =  _.orderBy(vm.vue_paymentsgroupByDate, 'createAt', 'asc');
+                    drawChartLines(vm.vue_paymentsgroupByDate);
+
                 },
              });
        },
@@ -37,7 +48,14 @@ var vm = new Vue ({
             if (this.isChecked)
                 payments = _.filter(payments, ['client.cakeMaker', true ]);
             vm.vue_totalMensal = totalMensalCalc(payments);
-            drawChart(payments);
+            drawChartPizza(payments);
+
+            if (this.isChecked)
+                paymentsGroupByDate = _.filter(vm.vue_paymentsgroupByDateNoFilter, ['client.cakeMaker', true ]);
+            else
+                paymentsGroupByDate = vm.vue_paymentsgroupByDate;
+
+            drawChartLines(paymentsGroupByDate);
 
        }
     },
@@ -45,11 +63,3 @@ var vm = new Vue ({
 
 
 
-function vueObjectToArray(o){
-    array = [];
-    array.push(['Cliente', 'Valor']);
-    for (key in o){
-        array.push([o[key].client.name , parseFloat(o[key].amount)]);
-    }
-    return array;
-}
