@@ -14,14 +14,29 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
+from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.urls import path
-
 from order_control import views
+
+# api <--
+from rest_framework import routers
+from order_control.api import PurchaseViewSet, PurchasedItemsViewSet
+
+# desativa a necessidade de barra no fim do endereço
+#router = routers.DefaultRouter(trailing_slash=False)
+
+router = routers.DefaultRouter()
+router.register(r'purchases', PurchaseViewSet)
+router.register(r'purchasesItems', PurchasedItemsViewSet)
+
+# api -->
 
 app_name = 'order_control'
 
 urlpatterns = [
+    url(r'^api/', include(router.urls)),
+
     path('login/', views.LoginView.as_view(), name='login'),
     path('', views.HomeView.as_view(), name='homeView'),
     path('client/', views.ClientCreateView.as_view(), name='client_create'),
