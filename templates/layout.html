@@ -4,13 +4,18 @@
     	{% load static %}
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
+
     <link rel="stylesheet" href="{% static '/order_control/css/bootstrap.min.css' %}" />
     <link rel="stylesheet" href="{% static '/order_control/css/style.css' %}" />
     <script type="text/javascript" src="{% static '/order_control/js/lib/jquery-1.7.2.min.js' %}"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script type="text/javascript" src="{% static '/order_control/js/handicraft.js' %}"></script>
     <script type="text/javascript" src="{% static '/order_control/js/lib/ajax_setup.js' %}"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
 
     <style>
         .row-div {
@@ -29,7 +34,8 @@
             <nav class="navbar navbar-expand navbar-light form-control" style="background-color: #fff;">
                 <!-- fee1feff -->
                 <div class="mx-auto order-0">
-                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                          aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                   </button>
                   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
@@ -46,12 +52,8 @@
             </nav>
 
 
-
-        <h1> {% if request.user.is_authenticated %} {{ request.user.first_name }}{% endif %} </h1>
         {% block content %} {% endblock %}
 
 </body>
 
 </html>
-
-<!-- Django - Integração com Assets -->

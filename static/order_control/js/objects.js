@@ -6,14 +6,23 @@ class Client {
         this.balance = balance;
         this.url_detail = url_detail;
     }
+ }
+
+class Payment {
+    constructor(id, type, createAt, amount, client){
+        this.id = id;
+        this.type = type;
+        this.createAt = createAt;
+        this.amount = amount;
+        this.client = client;
+    }
+}
+
+class Purchase {
+    constructor(id, createAt, amount){
+        this.id = id;
+        this.createAt = createAt;
+        this.amount = amount;
     }
 
-    class Payment {
-        constructor(id, type, createAt, amount, client){
-            this.id = id;
-            this.type = type;
-            this.createAt = createAt;
-            this.amount = amount;
-            this.client = client;
-    }
 }

@@ -10,8 +10,10 @@ var vm = new Vue ({
         years: [2021, 2022, 2023, 2024, 2025, 2026, 2026, 2028, 2029, 2030],
         yearSelected: data.getFullYear(),
         vue_payments: 0,
+        vue_purchases: 0,
         vue_paymentsgroupByDate: 0,
         vue_paymentsgroupByDateNoFilter: 0,
+        vue_purchasesgroupByDateNoFilter: 0,
         vue_totalMensal: 0,
         isChecked: false,
         ordem: {
@@ -28,6 +30,7 @@ var vm = new Vue ({
                 "data": {'message': event.target.value},
                 "success": function(message) {
                     vm.isChecked = false;
+                    console.log('purchase', message.purchases);
                     vm.vue_payments = groupByData(message.payments, 'client');
                     vm.vue_payments =  _.orderBy(vm.vue_payments, 'amount', 'desc');
                     vm.vue_totalMensal = totalMensalCalc(vm.vue_payments);

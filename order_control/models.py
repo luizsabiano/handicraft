@@ -98,7 +98,7 @@ class Payment (models.Model):
 # classe compras para contabilizar os gastos com compras de materiais
 
 class Purchase(models.Model):
-    createAt = models.DateField()
+    createAt = models.DateField(auto_now_add=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
 
 

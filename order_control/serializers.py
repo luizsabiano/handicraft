@@ -4,6 +4,7 @@ from order_control.models import Purchase, PurchasedItems
 
 
 class PurchaseSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Purchase
         fields = '__all__'

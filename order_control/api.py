@@ -10,7 +10,7 @@ class PurchaseViewSet(viewsets.ModelViewSet):
     serializer_class = PurchaseSerializer
 
     def create(self, request, *args, **kwargs):
-        dados = request.data;
+        dados = request.data
         dataDict = {}
         dataList = []
         purchaseSerializer = PurchaseSerializer(data=dados['purchases'])
@@ -18,17 +18,18 @@ class PurchaseViewSet(viewsets.ModelViewSet):
         if purchaseSerializer.is_valid():
             purchase = purchaseSerializer.save()
             pid = purchase.id
-            dataDict['purchase'] = purchaseSerializer.data
+            dataDict['purchases'] = purchaseSerializer.data
 
             for dado in dados['items']:
-                dado['purchase'] = pid
-                dado = PurchasedItemsSerializer(data=dado)
+                dados['items'][dado]['purchase'] = pid
+                dado = PurchasedItemsSerializer(data=dados['items'][dado])
 
                 if dado.is_valid():
                     dado.save()
                     dataList.append(dado.data)
 
             dataDict['items'] = dataList
+
             data = dataDict
             return Response(data, status=status.HTTP_201_CREATED)
         else:

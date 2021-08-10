@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView, UpdateView, DetailView
 
 from order_control.form import ClientForm, OrderForm, BoxTopForm, PaymentForm
-from order_control.models import Client, Order, BoxTop, LoyatyCard, Adhesive, Payment
+from order_control.models import Client, Order, BoxTop, LoyatyCard, Adhesive, Payment, Purchase
 
 from datetime import date, datetime
 import calendar
@@ -44,11 +44,15 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
         finalDate = datetime.strptime(dataConsulta + '-' + str(monthRange[1]), '%Y-%m-%d').date().strftime("%Y-%m-%d")
         payments = Payment.objects.filter(createAt__range=(initialDate, finalDate))
+        purchases = Purchase.objects.filter(createAt__range=(initialDate, finalDate))
         totalPayments = payments.aggregate(Sum('amount'))
-        return JsonResponse({'payments': list(payments.values('id', 'type', 'createAt', 'amount' , 'order__client__id',
-                                                             'order__client__name', 'order__client__cakeMaker',
-                                                             'order__client__balance')),
-                             'totalPayments': totalPayments})
+        return JsonResponse({'payments': list(payments.values('id', 'type', 'createAt', 'amount',
+                                                              'order__client__id',
+                                                              'order__client__name',
+                                                              'order__client__cakeMaker',
+                                                              'order__client__balance')),
+                             'totalPayments': totalPayments,
+                             'purchases': list(purchases.values())})
 
 
 class FormSubmittedIncontextMixin:
@@ -351,3 +355,7 @@ def loyatyCard_update(request, id):
         json.dumps(message),
         content_type="application/json"
     )
+
+
+class PurchaseView(LoginRequiredMixin, TemplateView):
+    template_name = 'order_control/purchase/create.html'

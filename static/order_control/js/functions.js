@@ -8,15 +8,20 @@ $(window).load(function() {
             "url": "",
             "data": {'message': data.getFullYear() + '-' + (parseInt(data.getMonth()) + 1)},
             "success": function(message) {
+
                 vm.vue_payments = groupByData(message.payments, 'client');
                 vm.vue_payments =  _.orderBy(vm.vue_payments, 'amount', 'desc');
                 drawChartPizza(vm.vue_payments);
 
                 vm.vue_paymentsgroupByDateNoFilter = groupByData(message.payments, '');
+                //vm.vue_purchasesgroupByDateNoFilter = groupByDataPurchase(message.purchases);
 
                 vm.vue_paymentsgroupByDate = groupByData(message.payments, 'date');
+                vm.vue_purchasesgroupByDate = groupByDataPurchase(message.purchases);
                 vm.vue_paymentsgroupByDate =  _.orderBy(vm.vue_paymentsgroupByDate, 'createAt', 'asc');
-                drawChartLines(vm.vue_paymentsgroupByDate);
+
+
+                drawChartLines(vm.vue_paymentsgroupByDate, vm.vue_purchasesgroupByDate);
 
                 vm.vue_totalMensal = totalMensalCalc(vm.vue_payments);
             },
@@ -31,7 +36,7 @@ function totalMensalCalc(payments){
     return total;
 }
 
-//Agrupa dados por item "groupBy"
+//Agrupa dados em pagamentos por item "groupBy"
 function groupByData(paymentList, groupBy){
    Payments = [];
    var repeated = false;
@@ -66,13 +71,34 @@ function groupByData(paymentList, groupBy){
             Payments.push(payment);
             repeated = false;
         }
-        else{
-            repeated = false;
-
-        }
+        else repeated = false;
     })
     return Payments
 }
+
+//Agrupa dados em compras por item "groupBy"
+function groupByDataPurchase(purchaseList){
+   Purchases = [];
+   var repeated = false;
+   purchaseList.forEach(function(purchase, idItem){
+       Purchases.forEach(function(purchaseJs, id) {
+            repeated = true;
+            if (purchaseJs.createAt == purchase['createAt']){
+                repeated = true;
+                Purchases[id].amount = parseFloat(Purchases[id].amount) + parseFloat(purchase['amount']);
+                return;
+            }
+       })
+
+       if (!repeated){
+            purchase = new Purchase(purchase['id'], purchase['createAt'], parseFloat(purchase['amount']));
+            Purchases.push(purchase);
+            repeated = false;
+       } else repeated = false;
+    })
+    return Purchases
+}
+
 
 function vueObjectToArrayPizza(o){
     array = [];
@@ -82,14 +108,27 @@ function vueObjectToArrayPizza(o){
     return array;
 }
 
-function vueObjectToArrayLine(o){
+function vueObjectToArrayLine(o, lines){
     array = [];
     array.push(['Dia', 'Arrecadação', 'Gastos']);
     totalCrescentePorDia = 0;
     for (key in o){
         totalCrescentePorDia =  totalCrescentePorDia + parseInt(o[key].amount);
-        array.push([ o[key].createAt.substring(8, 10) , totalCrescentePorDia, 1]);
+        array.push([ o[key].createAt.substring(8, 10) , totalCrescentePorDia, 0]);
     }
+
+    for (key in lines){
+        array.forEach(function(purchase, id){
+            if (purchase[0] == lines[key].createAt.substring(8, 10)){
+                array[id][2] = lines[key].amount;
+                totalCrescentePorDia = array[id][1];
+                return;
+            }
+        })
+
+        array.push([ lines[key].createAt.substring(8, 10) , totalCrescentePorDia, lines[key].amount]);
+    }
+    console.log(array)
     return array;
 }
 
@@ -100,8 +139,8 @@ google.charts.load('current', {'packages':['corechart']});
 google.charts.setOnLoadCallback(drawChartPizza);
 google.charts.setOnLoadCallback(drawChartLines);
 
-function drawChartPizza(dataToGraphs) {
-    var data = google.visualization.arrayToDataTable(vueObjectToArrayPizza(dataToGraphs));
+function drawChartPizza(dataToGraphsPizza) {
+    var data = google.visualization.arrayToDataTable(vueObjectToArrayPizza(dataToGraphsPizza));
 
     var options = {
       title: 'Clientes x Arrecadação Mensal',
@@ -112,8 +151,8 @@ function drawChartPizza(dataToGraphs) {
     chart.draw(data, options);
 }
 
-function drawChartLines(dataToGraphs) {
-    var data = google.visualization.arrayToDataTable(vueObjectToArrayLine(dataToGraphs));
+function drawChartLines(dataToGraphsPizza, dataToGraphsLines) {
+    var data = google.visualization.arrayToDataTable(vueObjectToArrayLine(dataToGraphsPizza, dataToGraphsLines));
 
     var options = {
       title: 'Arrecadação por dias do Mês',

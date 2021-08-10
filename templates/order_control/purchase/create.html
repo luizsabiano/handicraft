@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}Cadastro de Compras{% endblock %}
+
+{% block content %}
+    <div class="container" id="app">
+        <h3>Cadastro de Compras </h3>
+        </br>
+
+        <div class="form-control">Total: R$ [[ purchaseAmount ]] </div>
+        <br/>
+        <form>
+          <div class="form-group">
+              <input type="text" class="form-control" id="product" aria-describedby="emailHelp" placeholder="Item Comprado" v-model="product">
+
+          </div>
+          <div class="form-group">
+              <div class="row">
+                  <div class="col">
+                    <input type="number" class="form-control" id="quantity" aria-describedby="emailHelp" placeholder="Quantidade" v-model="quantity">
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control" id="amount" aria-describedby="emailHelp" placeholder="Valor" v-model="amount"
+                            v-on:keyup.enter="includeItem">
+                  </div>
+              </div>
+          </div>
+          {% csrf_token %}
+          <div class="btn btn-primary" v-on:click="includeItem">[[ button ]]
+          </div> <div class="btn btn-primary" v-on:click="salve">Salvar</div>
+
+
+        </form>
+        <br/>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantitade</th>
+                    <th>Valor</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, key) in items">
+                    <td>[[ item['name'] ]]</td>
+                    <td>[[ item['quantity'] ]]</td>
+                    <td>[[ item['amount'] ]]</td>
+                    <td>
+                        <a href="#" @click="editItem(key)">Editar </a> | <a href="#" @click="excludeItem(key)">Excluir</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    {% load static %}
+
+    <script type="text/javascript" src="{% static '/order_control/js/lib/vue.js' %}"></script>
+    <script type="text/javascript" src="{% static '/order_control/js/axiosGet_csrftoken.js' %}"></script>
+    <script type="text/javascript" src="{% static '/order_control/js/purchases/vue.js' %}"></script>
+
+{% endblock %}
