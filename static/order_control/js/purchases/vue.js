@@ -10,6 +10,7 @@ var vm = new Vue
         quantity: null,
         amount: null,
         itemsQuantity: 0,
+        createAt: data.getFullYear() + "-" + ("0" + (data.getMonth() + 1)).slice(-2) + "-" + ("0" + data.getDate()).slice(-2),
         items: {},
         button: 'Incluir Item',
         info: null,
@@ -51,7 +52,7 @@ var vm = new Vue
         salve () {
           var message = {};
           message.purchases = {
-            "createAt": data.getFullYear() + "-" + data.getMonth() + "-" + data.getDay(),
+            "createAt": this.createAt,
             "amount": this.purchaseAmount
           };
 
@@ -59,7 +60,7 @@ var vm = new Vue
           message.items = this.items;
           console.log(message);
 
-          axios.post("http://127.0.0.1:8000/api/purchases/", message)
+          axios.post("../api/purchases/", message)
             .then(response => {
                 console.log(response)
                 this.product = '';
@@ -67,6 +68,7 @@ var vm = new Vue
                 this.amount = null;
                 this.purchaseAmount = null;
                 this.items = {};
+                this.createAt = data.getFullYear() + "-" + ("0" + (data.getMonth() + 1)).slice(-2) + "-" + ("0" + data.getDate()).slice(-2)
             })
             .catch(error => {
                 console.log(error.response)

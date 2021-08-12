@@ -6,20 +6,18 @@ $(window).load(function() {
            "type": "POST",
             "dataType": "json",
             "url": "",
-            "data": {'message': data.getFullYear() + '-' + (parseInt(data.getMonth()) + 1)},
+            "data": {'message': data.getFullYear() + '-' + ("0" + (data.getMonth() + 1)).slice(-2)},
             "success": function(message) {
 
                 vm.vue_payments = groupByData(message.payments, 'client');
                 vm.vue_payments =  _.orderBy(vm.vue_payments, 'amount', 'desc');
                 drawChartPizza(vm.vue_payments);
-
                 vm.vue_paymentsgroupByDateNoFilter = groupByData(message.payments, '');
                 //vm.vue_purchasesgroupByDateNoFilter = groupByDataPurchase(message.purchases);
 
                 vm.vue_paymentsgroupByDate = groupByData(message.payments, 'date');
                 vm.vue_purchasesgroupByDate = groupByDataPurchase(message.purchases);
                 vm.vue_paymentsgroupByDate =  _.orderBy(vm.vue_paymentsgroupByDate, 'createAt', 'asc');
-
 
                 drawChartLines(vm.vue_paymentsgroupByDate, vm.vue_purchasesgroupByDate);
 
@@ -82,7 +80,6 @@ function groupByDataPurchase(purchaseList){
    var repeated = false;
    purchaseList.forEach(function(purchase, idItem){
        Purchases.forEach(function(purchaseJs, id) {
-            repeated = true;
             if (purchaseJs.createAt == purchase['createAt']){
                 repeated = true;
                 Purchases[id].amount = parseFloat(Purchases[id].amount) + parseFloat(purchase['amount']);
@@ -93,7 +90,6 @@ function groupByDataPurchase(purchaseList){
        if (!repeated){
             purchase = new Purchase(purchase['id'], purchase['createAt'], parseFloat(purchase['amount']));
             Purchases.push(purchase);
-            repeated = false;
        } else repeated = false;
     })
     return Purchases
@@ -108,27 +104,56 @@ function vueObjectToArrayPizza(o){
     return array;
 }
 
-function vueObjectToArrayLine(o, lines){
+function vueObjectToArrayLine(order, purchase){
     array = [];
-    array.push(['Dia', 'Arrecadação', 'Gastos']);
-    totalCrescentePorDia = 0;
-    for (key in o){
-        totalCrescentePorDia =  totalCrescentePorDia + parseInt(o[key].amount);
-        array.push([ o[key].createAt.substring(8, 10) , totalCrescentePorDia, 0]);
+    var repeated = false;
+
+    // insere em um array [data, valor pedido, valor compra] todos os pedidos
+    // valores de compra nulos
+    var totalCrescentePorDia = 0;
+    for (key in order){
+        totalCrescentePorDia =  totalCrescentePorDia + parseInt(order[key].amount);
+        array.push([ order[key].createAt.substring(8, 10) , totalCrescentePorDia, null]);
     }
 
-    for (key in lines){
-        array.forEach(function(purchase, id){
-            if (purchase[0] == lines[key].createAt.substring(8, 10)){
-                array[id][2] = lines[key].amount;
-                totalCrescentePorDia = array[id][1];
-                return;
+    // insere todos as compras
+    // caso ja tenha a mesma data no array altera somente o valor da compra que era nulo
+    // caso não tenha insere novo item no array e poe valor do pedido nulo
+    for (key in purchase){
+        array.forEach(function(itemArray, id){
+            if (itemArray[0] == purchase[key].createAt.substring(8, 10)){
+                array[id][2] = purchase[key].amount;
+                repeated = true;
             }
         })
+        if (!repeated)
+            array.push([ purchase[key].createAt.substring(8, 10) , null, purchase[key].amount]);
+        else repeated = false;
 
-        array.push([ lines[key].createAt.substring(8, 10) , totalCrescentePorDia, lines[key].amount]);
     }
-    console.log(array)
+
+    // colocando em ordem crescente e preenchendo os campos nulos do array
+    // caso seja campo nulo preencha com o valor anterior
+    // caso seja o primeiro e nulo preencha com zero
+    // soma o item anterior com o atual
+    array.sort();
+    totalCrescentePorDia = 0;
+    array.forEach(function(value, id){
+        if (value[1] == null && id > 0)
+            array[id][1] = array[id -1][1];
+        else if (value[1] == null && id == 0)
+            array[id][1] = 0
+
+        if (value[2] != null){
+            totalCrescentePorDia += array[id][2];
+            array[id][2] = totalCrescentePorDia;
+        }
+        if (value[2] == null && id > 0)
+            array[id][2] = totalCrescentePorDia;
+        else if (value[2] == null && id == 0)
+            array[id][2] = 0
+    })
+    array.unshift(['Dia', 'Arrecadação', 'Gastos']);
     return array;
 }
 

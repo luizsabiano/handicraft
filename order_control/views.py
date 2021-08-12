@@ -44,7 +44,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
         finalDate = datetime.strptime(dataConsulta + '-' + str(monthRange[1]), '%Y-%m-%d').date().strftime("%Y-%m-%d")
         payments = Payment.objects.filter(createAt__range=(initialDate, finalDate))
-        purchases = Purchase.objects.filter(createAt__range=(initialDate, finalDate))
+        purchases = Purchase.objects.all().order_by('createAt').filter(createAt__range=(initialDate, finalDate))
         totalPayments = payments.aggregate(Sum('amount'))
         return JsonResponse({'payments': list(payments.values('id', 'type', 'createAt', 'amount',
                                                               'order__client__id',
