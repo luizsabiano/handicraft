@@ -15,6 +15,7 @@ var vm = new Vue ({
         vue_paymentsgroupByDateNoFilter: 0,
         vue_purchasesgroupByDateNoFilter: 0,
         vue_totalMensal: 0,
+        vue_despesasTotal:0,
         isChecked: false,
         ordem: {
           colunas: ['amount'],
@@ -30,35 +31,39 @@ var vm = new Vue ({
                 "data": {'message': event.target.value},
                 "success": function(message) {
                     vm.isChecked = false;
-                    console.log('purchase', message.purchases);
                     vm.vue_payments = groupByData(message.payments, 'client');
                     vm.vue_payments =  _.orderBy(vm.vue_payments, 'amount', 'desc');
-                    vm.vue_totalMensal = totalMensalCalc(vm.vue_payments);
                     drawChartPizza(vm.vue_payments);
-
-
                     vm.vue_paymentsgroupByDateNoFilter = groupByData(message.payments, '');
 
                     vm.vue_paymentsgroupByDate = groupByData(message.payments, 'date');
+                    vm.vue_purchasesgroupByDate = groupByDataPurchase(message.purchases);
                     vm.vue_paymentsgroupByDate =  _.orderBy(vm.vue_paymentsgroupByDate, 'createAt', 'asc');
-                    drawChartLines(vm.vue_paymentsgroupByDate);
 
+                    drawChartLines(vueObjectToArrayLine(vm.vue_paymentsgroupByDate, vm.vue_purchasesgroupByDate));
+
+                    vm.vue_totalMensal = totalMensalCalc(vm.vue_payments);
+                    vm.vue_despesasTotal =  DespesatotalMensalCalc(vm.vue_purchasesgroupByDate);
                 },
              });
        },
        onChangeCheckbox(event){
             var payments = vm.vue_payments;
+
             if (this.isChecked)
                 payments = _.filter(payments, ['client.cakeMaker', true ]);
             vm.vue_totalMensal = totalMensalCalc(payments);
             drawChartPizza(payments);
 
-            if (this.isChecked)
+            if (this.isChecked){
                 paymentsGroupByDate = _.filter(vm.vue_paymentsgroupByDateNoFilter, ['client.cakeMaker', true ]);
+                paymentsGroupByDate = groupByData(paymentsGroupByDate, 'date');
+                paymentsGroupByDate = _.orderBy(paymentsGroupByDate, 'createAt', 'asc');
+            }
             else
                 paymentsGroupByDate = vm.vue_paymentsgroupByDate;
 
-            drawChartLines(paymentsGroupByDate);
+            drawChartLines(vueObjectToArrayLine(paymentsGroupByDate, vm.vue_purchasesgroupByDate));
 
        }
     },

@@ -35,7 +35,6 @@ class LoginView(TemplateView):
 
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'order_control/index.html'
-
     def post(self, request, *args, **kwargs):
         dataConsulta = request.POST.get('message')
         baseDate = datetime.strptime(dataConsulta + '-01', '%Y-%m-%d').date()
@@ -43,7 +42,9 @@ class HomeView(LoginRequiredMixin, TemplateView):
         monthRange = calendar.monthrange(baseDate.year, baseDate.month)
 
         finalDate = datetime.strptime(dataConsulta + '-' + str(monthRange[1]), '%Y-%m-%d').date().strftime("%Y-%m-%d")
-        payments = Payment.objects.filter(createAt__range=(initialDate, finalDate))
+        payments = Payment.objects.filter(createAt__range=(initialDate, finalDate)).order_by('createAt')
+        # teste = payments.filter(order__client__cakeMaker=True).values('createAt', 'amount').order_by('createAt')
+        # for t in teste: print(t)
         purchases = Purchase.objects.all().order_by('createAt').filter(createAt__range=(initialDate, finalDate))
         totalPayments = payments.aggregate(Sum('amount'))
         return JsonResponse({'payments': list(payments.values('id', 'type', 'createAt', 'amount',

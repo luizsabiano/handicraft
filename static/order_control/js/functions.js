@@ -13,15 +13,16 @@ $(window).load(function() {
                 vm.vue_payments =  _.orderBy(vm.vue_payments, 'amount', 'desc');
                 drawChartPizza(vm.vue_payments);
                 vm.vue_paymentsgroupByDateNoFilter = groupByData(message.payments, '');
-                //vm.vue_purchasesgroupByDateNoFilter = groupByDataPurchase(message.purchases);
 
                 vm.vue_paymentsgroupByDate = groupByData(message.payments, 'date');
                 vm.vue_purchasesgroupByDate = groupByDataPurchase(message.purchases);
                 vm.vue_paymentsgroupByDate =  _.orderBy(vm.vue_paymentsgroupByDate, 'createAt', 'asc');
 
-                drawChartLines(vm.vue_paymentsgroupByDate, vm.vue_purchasesgroupByDate);
+
+                drawChartLines(vueObjectToArrayLine(vm.vue_paymentsgroupByDate, vm.vue_purchasesgroupByDate));
 
                 vm.vue_totalMensal = totalMensalCalc(vm.vue_payments);
+                vm.vue_despesasTotal =  DespesatotalMensalCalc(vm.vue_purchasesgroupByDate);
             },
      });
 });
@@ -30,6 +31,14 @@ function totalMensalCalc(payments){
     total = 0;
     payments.forEach(function(payment) {
         total += payment.amount;
+    })
+    return total;
+}
+
+function DespesatotalMensalCalc(purchases){
+    total = 0;
+    purchases.forEach(function(purchase) {
+        total += purchase.amount;
     })
     return total;
 }
@@ -136,7 +145,9 @@ function vueObjectToArrayLine(order, purchase){
     // caso seja campo nulo preencha com o valor anterior
     // caso seja o primeiro e nulo preencha com zero
     // soma o item anterior com o atual
-    array.sort();
+    array.sort(function (a, b) {
+        return a[0] - b[0];
+    });
     totalCrescentePorDia = 0;
     array.forEach(function(value, id){
         if (value[1] == null && id > 0)
@@ -161,8 +172,8 @@ function vueObjectToArrayLine(order, purchase){
 // Gráfico Google tipo pizza
 
 google.charts.load('current', {'packages':['corechart']});
-google.charts.setOnLoadCallback(drawChartPizza);
-google.charts.setOnLoadCallback(drawChartLines);
+//google.charts.setOnLoadCallback(drawChartPizza);
+//google.charts.setOnLoadCallback(drawChartLines);
 
 function drawChartPizza(dataToGraphsPizza) {
     var data = google.visualization.arrayToDataTable(vueObjectToArrayPizza(dataToGraphsPizza));
@@ -176,8 +187,8 @@ function drawChartPizza(dataToGraphsPizza) {
     chart.draw(data, options);
 }
 
-function drawChartLines(dataToGraphsPizza, dataToGraphsLines) {
-    var data = google.visualization.arrayToDataTable(vueObjectToArrayLine(dataToGraphsPizza, dataToGraphsLines));
+function drawChartLines(dataToGraphsLines) {
+    var data = google.visualization.arrayToDataTable(dataToGraphsLines);
 
     var options = {
       title: 'Arrecadação por dias do Mês',

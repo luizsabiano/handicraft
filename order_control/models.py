@@ -106,4 +106,11 @@ class PurchasedItems(models.Model):
     name = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     quantity = models.IntegerField()
-    purchase = models.ForeignKey(Purchase, on_delete=models.PROTECT)
+    purchase = models.ForeignKey(Purchase, related_name='items', on_delete=models.PROTECT)
+
+    class Meta:
+        unique_together = ['purchase', 'id']
+        ordering = ['id']
+
+    def __str__(self):
+        return '%d: %s: %d:  %d' % (self.id, self.name, self.quantity, self.amount)

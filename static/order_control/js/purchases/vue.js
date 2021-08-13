@@ -11,7 +11,7 @@ var vm = new Vue
         amount: null,
         itemsQuantity: 0,
         createAt: data.getFullYear() + "-" + ("0" + (data.getMonth() + 1)).slice(-2) + "-" + ("0" + data.getDate()).slice(-2),
-        items: {},
+        items: [],
         button: 'Incluir Item',
         info: null,
     },
@@ -22,14 +22,12 @@ var vm = new Vue
 
             this.button !='Incluir Item' ? this.button = 'Incluir Item' : '';
             this.itemsQuantity += 1;
-            Vue.set(this.items, 'item' + this.itemsQuantity,
-                        {
+
+            this.items.push({
                         "name": this.product,
-                        "quantity": parseInt(this.quantity),
-                        "amount": parseFloat(this.amount),
-                        "purchase": ""
-                        }
-            );
+                        "quantity": this.quantity,
+                        "amount": this.amount
+                        })
 
             this.purchaseAmount += parseFloat(this.amount);
 
@@ -50,24 +48,24 @@ var vm = new Vue
             this.purchaseAmount -= parseFloat(this.amount);
         },
         salve () {
-          var message = {};
-          message.purchases = {
+          var data = {
             "createAt": this.createAt,
-            "amount": this.purchaseAmount
+            "amount": this.purchaseAmount.toString()
           };
 
 
-          message.items = this.items;
-          console.log(message);
+         // message.items = JSON.parse(this.items);
+          data.items = this.items;
+          console.log('array: ', data);
 
-          axios.post("../api/purchases/", message)
+          axios.post("../api/purchases/", data)
             .then(response => {
                 console.log(response)
                 this.product = '';
                 this.quantity = null;
                 this.amount = null;
                 this.purchaseAmount = null;
-                this.items = {};
+                this.items = [];
                 this.createAt = data.getFullYear() + "-" + ("0" + (data.getMonth() + 1)).slice(-2) + "-" + ("0" + data.getDate()).slice(-2)
             })
             .catch(error => {
