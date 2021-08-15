@@ -60,5 +60,6 @@ urlpatterns = [
     path('orders/items/<int:id>/destroy/', views.order_items_destroy, name='order_items_destroy'),
     path('orders/items/<int:id>/update/', views.order_items_update, name='order_items_update'),
     path('orders/<int:id>/loyatyCard_details/update/', views.loyatyCard_update, name='loyatyCard_update'),
-    path('purchases/', views.PurchaseView.as_view(), name='purchase_create'),
+    path('purchase/', views.PurchaseView.as_view(), name='purchase_create'),
+    path('purchases/', views.PurchaseListView.as_view(), name='purchase_list'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

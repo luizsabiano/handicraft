@@ -7,6 +7,7 @@ from django.core import serializers
 from django.db.models import Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
+from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView, UpdateView, DetailView
@@ -208,7 +209,7 @@ def order_add_items(request):
                 loyatyCard.save()
                 adhesive = Adhesive(topOfCake=box_top, loyatyCard=loyatyCard)
                 adhesive.save()
-                if loyatyCard.adhesiveCount > 10:
+                if loyatyCard.adhesiveCount > 9:
                     loyatyCard.finishedAt = timezone.now()
                     loyatyCard.save()
 
@@ -360,3 +361,7 @@ def loyatyCard_update(request, id):
 
 class PurchaseView(LoginRequiredMixin, TemplateView):
     template_name = 'order_control/purchase/create.html'
+
+class PurchaseListView(LoginRequiredMixin, TemplateView):
+    template_name = 'order_control/purchase/list.html'
+

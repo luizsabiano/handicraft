@@ -78,6 +78,10 @@ class LoyatyCard(models.Model):
     isDelivered = models.BooleanField(default=False, verbose_name="Está entregue?")
 
 
+    def __str__(self):
+        return 'Id: %d - Cliente: %s -  Adevivos: %d' % (self.id, self.client, self.adhesiveCount)
+
+
 # A cada compra de topo a boleira ganha um adesivo
 # a cada 10 adevivos ganha um topo de brinde
 
@@ -85,6 +89,9 @@ class Adhesive (models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     topOfCake = models.ForeignKey(BoxTop, on_delete=models.PROTECT)
     loyatyCard = models.ForeignKey(LoyatyCard, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return 'Criado em: %s - Cartao nº: %s' % (str(self.createdAt)[0:10], self.loyatyCard)
 
 
 class Payment (models.Model):
@@ -100,6 +107,9 @@ class Payment (models.Model):
 class Purchase(models.Model):
     createAt = models.DateField()
     amount = models.DecimalField(max_digits=8, decimal_places=2)
+
+    class Meta:
+        ordering = ['-id']
 
 
 class PurchasedItems(models.Model):
