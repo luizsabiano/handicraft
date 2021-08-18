@@ -1,18 +1,90 @@
+// variável global criada pq o child não reconhecia uma variável
+// parent, aparentemente o component filho é criado antes do pai
+// logo, a variavel pai nao existe no momento da atribuição.
+var list;
+
+var navPagination = Vue.extend({
+    delimiters : ['[[', ']]'],
+    props: ['postTitle'],
+    data: function() {
+        return {
+            next: localStorage.getItem('next'),
+            previous: null,
+            count: localStorage.getItem('count'),
+            current: 1,
+        }
+    },
+    /* `` uso da crase é permitido desde o EMA Script 6 possibilitando
+          o código html ( template ) seja multilinha */
+    template: `
+        <nav aria-label="...">
+          <ul class="pagination">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">Página [[ current ? current : count ]] de [[ count ]]</a>
+            </li>
+            <li :class="previous ? 'page-item' : 'page-item disabled'">
+              <a class="page-link" href="#" @click="listPurchasePagination(previous)"> Anterior</a>
+            </li>
+            <li :class="next ? 'page-item' : 'page-item disabled'">
+              <a class="page-link" href="#" @click="listPurchasePagination(next)"> Próxima</a>
+            </li>
+          </ul>
+        </nav>
+    `,
+    mounted: function(){
+        this.listPurchasePagination('../api/purchases/');
+    },
+    methods: {
+        listPurchasePagination(url){
+            var pagination;
+            $.ajax({
+                "type": "GET",
+                "dataType": "json",
+                "url": url,
+                "success": function(message) {
+                    list = message['results'];
+                    next = null;
+                    previous = null;
+                    current = null;
+                    if (message['next'])
+                        next = message['next'];
+                    if (message['previous'])
+                        this.previous = message['previous'];
+                    if (message['next'])
+                        current = parseInt(message['next'].split("page=")[1]) - 1;
+
+                    count = Math.ceil(parseFloat(message['count'])/ message['maxPage']);
+                    pagination = {'next': message['next'], 'previous': message['previous'], 'count': count, 'current': current, 'list': list};
+                },
+                async: false,
+            })
+            this.next = pagination['next'];
+            this.previous = pagination['previous'];
+            this.count = pagination['count'];
+            this.current = pagination['current'];
+            if (vm){
+                vm.list = pagination['list'];
+                list = null;
+            }
+
+        },
+
+    },
+});
+
+
 var vm = new Vue
 ({
     delimiters : ['[[', ']]'],
     el: '#app',
     data: {
-        purchases: [],
-        pagination: {
-            next: null,
-            previous: null,
-            count: 0,
-            current: 1,
-            maxPage: 10,
-        },
-
-
+        list: [],
+    },
+    components: {
+        'nav-pagination': navPagination,
+    },
+    mounted: function(){
+        this.list = list
     },
     methods: {
         showItems(key) {
@@ -26,7 +98,7 @@ var vm = new Vue
         excludePurchase(id, arraykey) {
           axios.delete("../api/purchases/" + id)
             .then(response => {
-                vm.purchases.splice(arraykey,1);
+                this.list.splice(arraykey,1);
             })
             .catch(error => {
                 console.log(error.response)
@@ -41,8 +113,8 @@ var vm = new Vue
         excludeItemsPurchase(id, keyArray, keyItem) {
           axios.delete("../api/purchasesItems/" + id)
             .then(response => {
-                vm.purchases[keyArray]['items'].splice(keyItem,1);
-                vm.purchases[keyArray]['amount'] = parseFloat(vm.purchases[keyArray]['amount']) - parseFloat(response['data']['amount']);
+                this.list[keyArray]['items'].splice(keyItem,1);
+                this.list[keyArray]['amount'] = parseFloat(this.list[keyArray]['amount']) - parseFloat(response['data']['amount']);
             })
             .catch(error => {
                 console.log(error.response)
@@ -54,21 +126,7 @@ var vm = new Vue
             },
             );
         },
-        listPurchasePagination(url){
-            $.ajax({
-           "type": "GET",
-            "dataType": "json",
-            "url": url,
-            "success": function(message) {
-                vm.purchases = message['results'];
-                vm.pagination.next = message['next'];
-                vm.pagination.previous = message['previous'];
-                vm.pagination.count = Math.ceil(parseFloat(message['count'])/ vm.pagination.maxPage);
-                if (message['next'])
-                    vm.pagination.current = parseInt(message['next'].split("page=")[1]) - 1;
-                else vm.pagination.current = null;
-            },
-     });
-        },
     },
-})
+
+});
+

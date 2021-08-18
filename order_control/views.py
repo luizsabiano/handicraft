@@ -11,7 +11,10 @@ from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView, UpdateView, DetailView
+from rest_framework import pagination
+from rest_framework.response import Response
 
+from handicraft import settings
 from order_control.form import ClientForm, OrderForm, BoxTopForm, PaymentForm
 from order_control.models import Client, Order, BoxTop, LoyatyCard, Adhesive, Payment, Purchase
 
@@ -362,6 +365,18 @@ def loyatyCard_update(request, id):
 class PurchaseView(LoginRequiredMixin, TemplateView):
     template_name = 'order_control/purchase/create.html'
 
+
 class PurchaseListView(LoginRequiredMixin, TemplateView):
     template_name = 'order_control/purchase/list.html'
+
+
+class CustomPagination(pagination.PageNumberPagination):
+    def get_paginated_response(self, data):
+        return Response({
+            'maxPage':  settings.REST_FRAMEWORK['PAGE_SIZE'],
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'count': self.page.paginator.count,
+            'results': data
+        })
 

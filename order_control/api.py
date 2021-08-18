@@ -1,8 +1,9 @@
 import decimal
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, pagination
 from rest_framework.response import Response
 
+from handicraft import settings
 from order_control.models import Purchase, PurchasedItems
 from order_control.serializers import PurchaseSerializer, PurchasedItemsSerializer
 
@@ -12,7 +13,6 @@ class PurchaseViewSet(viewsets.ModelViewSet):
     queryset = Purchase.objects.all()
 
     def create(self,  request, *args, **kwargs):
-
         purchaseSerializer = PurchaseSerializer(data=request.data)
         if purchaseSerializer.is_valid():
             purchaseSerializer.save()

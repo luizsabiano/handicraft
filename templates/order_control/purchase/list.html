@@ -12,19 +12,8 @@
     <div class="row">
         <div class="col"><h1>Lista de Compras</h1></div>
         <div class="col">
-            <nav aria-label="...">
-              <ul class="pagination">
-                <li class="page-item disabled">
-                  <a class="page-link" href="#" tabindex="-1">Página [[ pagination['current'] ? pagination['current'] : pagination['count'] ]] de [[ pagination['count'] ]]</a>
-                </li>
-                <li :class="pagination['previous'] ? 'page-item' : 'page-item disabled'">
-                  <a class="page-link" href="#" @click="listPurchasePagination(pagination['previous'])">Anterior</a>
-                </li>
-                <li :class="pagination['next'] ? 'page-item' : 'page-item disabled'">
-                  <a class="page-link" href="#" @click="listPurchasePagination(pagination['next'])">Próxima</a>
-                </li>
-              </ul>
-            </nav>
+            <!-- navPagination -->
+            <nav-pagination></nav-pagination>
         </div>
     </div>
     <table class="table table-striped">
@@ -41,7 +30,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="(purchase, key) in purchases">
+            <tr v-for="(purchase, key) in list">
                 <td>
                     <div class="row">
                         <div class="col-md-3">[[purchase['createAt'] ]]</div>
@@ -69,13 +58,15 @@
         </tbody>
 
     </table>
-
 </div>
 
-<script type="text/javascript" src="{% static '/order_control/js/axiosGet_csrftoken.js' %}"></script>
+
+
 <script type="text/javascript" src="{% static '/order_control/js/lib/vue.js' %}"></script>
-<script type="text/javascript" src="{% static '/order_control/js/purchases/list.js' %}"></script>
 <script type="text/javascript" src="{% static '/order_control/js/purchases/vue_list.js' %}"></script>
+<script type="text/javascript" src="{% static '/order_control/js/axiosGet_csrftoken.js' %}"></script>
+
+
 
 
 
