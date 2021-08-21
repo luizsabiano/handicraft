@@ -1,16 +1,13 @@
-// variável global criada pq o child não reconhecia uma variável
-// parent, aparentemente o component filho é criado antes do pai
-// logo, a variavel pai nao existe no momento da atribuição.
-var list;
+const event = new Vue();
+
 
 var navPagination = Vue.extend({
     delimiters : ['[[', ']]'],
-    props: ['postTitle'],
     data: function() {
         return {
-            next: localStorage.getItem('next'),
+            next: null,
             previous: null,
-            count: localStorage.getItem('count'),
+            count: 1,
             current: 1,
         }
     },
@@ -32,46 +29,32 @@ var navPagination = Vue.extend({
         </nav>
     `,
     mounted: function(){
-        this.listPurchasePagination('../api/purchases/');
+        event.$on('get-pagination', (pagination) => {
+            current = null;
+            if (pagination['next'])
+                current = parseInt(pagination['next'].split("page=")[1]) - 1;
+
+            count = Math.ceil(parseFloat(pagination['count'])/ pagination['maxPage']);
+            this.next = pagination['next'];
+            this.previous = pagination['previous'];
+            this.count = count;
+            this.current = current;
+        });
+
     },
     methods: {
         listPurchasePagination(url){
-            var pagination;
-            $.ajax({
-                "type": "GET",
-                "dataType": "json",
-                "url": url,
-                "success": function(message) {
-                    list = message['results'];
-                    next = null;
-                    previous = null;
-                    current = null;
-                    if (message['next'])
-                        next = message['next'];
-                    if (message['previous'])
-                        this.previous = message['previous'];
-                    if (message['next'])
-                        current = parseInt(message['next'].split("page=")[1]) - 1;
-
-                    count = Math.ceil(parseFloat(message['count'])/ message['maxPage']);
-                    pagination = {'next': message['next'], 'previous': message['previous'], 'count': count, 'current': current, 'list': list};
-                },
-                async: false,
-            })
-            this.next = pagination['next'];
-            this.previous = pagination['previous'];
-            this.count = pagination['count'];
-            this.current = pagination['current'];
-            if (vm){
-                vm.list = pagination['list'];
-                list = null;
-            }
-
+            event.$emit('get-list', url);
         },
 
     },
 });
 
+
+// Tentativa de retirar variável global
+// Funciona para integrar com modulos, porem tentei em componentes.
+// Vue.use(navPagination);
+// Erro: Cannot read property '_init' of null
 
 var vm = new Vue
 ({
@@ -84,7 +67,12 @@ var vm = new Vue
         'nav-pagination': navPagination,
     },
     mounted: function(){
-        this.list = list
+       this.getList('../api/purchases/');
+
+       event.$on('get-list', (url) => {
+            this.getList(url);
+        });
+
     },
     methods: {
         showItems(key) {
@@ -125,6 +113,19 @@ var vm = new Vue
                  },
             },
             );
+        },
+        getList(url){
+            $.ajax({
+                "type": "GET",
+                "dataType": "json",
+                "url": url,
+                "success": function(message) {
+                    vm.list = message['results'];
+                    // paginação
+                    pagination = {'next': message['next'], 'previous': message['previous'], 'count': message['count'], 'maxPage': message['maxPage'] };
+                    event.$emit('get-pagination', pagination);
+                }
+            });
         },
     },
 
