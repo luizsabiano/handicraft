@@ -27,6 +27,9 @@ class Client (models.Model):
     balance = models.DecimalField(max_digits=8, decimal_places=2, default=0.0, verbose_name='Balanço')
     cakeMaker = models.BooleanField(default=False, verbose_name='Boleira')
 
+    class Meta:
+        ordering = ['id']
+
     def __str__(self):
         return self.name
 
@@ -44,7 +47,12 @@ class Order(models.Model):
     downPayment = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Entrada R$', null=True, blank=True, default=0.00)
     totalOrder = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Total Pedido R$', null=True, blank=True, default=0.00)
     totalPayment = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Total Pago R$', null=True, blank=True, default=0.00)
-    client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name='Cliente')
+    client = models.ForeignKey(Client, on_delete=models.PROTECT, related_name="client", verbose_name='Cliente')
+
+    class Meta:
+        unique_together = ['client', 'id']
+        ordering = ['-id']
+
 
     def __str__(self):
         return str(self.id) + ' - '   + self.client.name + ' - ' + self.createdAt.strftime('%m/%d/%Y')
@@ -61,7 +69,12 @@ class BoxTop(models.Model):
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00, verbose_name='Valor total das Caixas R$')
     description = models.CharField(max_length=255, null=True, blank=True)
     storedIn = models.FileField(upload_to='boxes/', null=True, blank=True, verbose_name='Figura')
-    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.PROTECT)
+
+    class Meta:
+        unique_together = ['order', 'id']
+        ordering = ['id']
+
 
 
 # classe cartão fidelidade
@@ -124,3 +137,4 @@ class PurchasedItems(models.Model):
 
     def __str__(self):
         return '%d: %s: %d:  %d' % (self.id, self.name, self.quantity, self.amount)
+

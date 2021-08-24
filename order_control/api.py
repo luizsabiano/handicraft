@@ -4,8 +4,9 @@ from rest_framework import viewsets, status, pagination
 from rest_framework.response import Response
 
 from handicraft import settings
-from order_control.models import Purchase, PurchasedItems
-from order_control.serializers import PurchaseSerializer, PurchasedItemsSerializer
+from order_control.models import Purchase, PurchasedItems, Order, BoxTop, Client
+from order_control.serializers import PurchaseSerializer, PurchasedItemsSerializer, OrderSerializer, BoxTopSerializer, \
+    ClientSerializer
 
 
 class PurchaseViewSet(viewsets.ModelViewSet):
@@ -43,3 +44,49 @@ class PurchasedItemsViewSet(viewsets.ModelViewSet):
         # -------------------------------------
         self.perform_destroy(instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OrdersViewSet(viewsets.ModelViewSet):
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
+
+    def create(self,  request, *args, **kwargs):
+        orderSerializer = OrderSerializer(data=request.data)
+        if orderSerializer.is_valid():
+            orderSerializer.save()
+            data = orderSerializer.data
+            headers = self.get_success_headers(orderSerializer.data)
+            return Response(data, status=status.HTTP_201_CREATED,  headers=headers)
+        else:
+            return Response(orderSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        def destroy(self, request, *args, **kwargs):
+
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class OrderItemsViewSet(viewsets.ModelViewSet):
+    serializer_class = BoxTopSerializer
+    queryset = BoxTop.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        # subtrai o item do total em orders
+        item = BoxTop.objects.get(id=serializer.data['id'])
+        item.order.totalOrder -= decimal.Decimal(serializer.data['amount'])
+        item.order.save()
+        # -------------------------------------
+        self.perform_destroy(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def to_representation(self, instance):
+        self.fields['client'] = ClientSerializer(read_only=True)
+        return super(OrderSerializer, self).to_representation(instance)
+
+
+class ClientViewSet(viewsets.ModelViewSet):
+    serializer_class = ClientSerializer
+    queryset = Client.objects.all()

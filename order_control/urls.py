@@ -21,7 +21,7 @@ from order_control import views
 
 # api <--
 from rest_framework import routers
-from order_control.api import PurchaseViewSet, PurchasedItemsViewSet
+from order_control.api import PurchaseViewSet, PurchasedItemsViewSet, OrderItemsViewSet, OrdersViewSet, ClientViewSet
 
 # desativa a necessidade de barra no fim do endereço
 #router = routers.DefaultRouter(trailing_slash=False)
@@ -29,6 +29,9 @@ from order_control.api import PurchaseViewSet, PurchasedItemsViewSet
 router = routers.DefaultRouter()
 router.register(r'purchases', PurchaseViewSet)
 router.register(r'purchasesItems', PurchasedItemsViewSet)
+router.register(r'orders', OrdersViewSet)
+router.register(r'orderItems', OrderItemsViewSet)
+router.register(r'clients', ClientViewSet)
 
 # api -->
 
