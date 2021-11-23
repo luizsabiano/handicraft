@@ -12,7 +12,9 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView, UpdateView, DetailView
 from rest_framework import pagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from handicraft import settings
 from order_control.form import ClientForm, OrderForm, BoxTopForm, PaymentForm
@@ -20,6 +22,14 @@ from order_control.models import Client, Order, BoxTop, LoyatyCard, Adhesive, Pa
 
 from datetime import date, datetime
 import calendar
+
+
+class HelloView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        content = {'message': 'Hello, World!'}
+        return Response(content)
 
 
 class LoginView(TemplateView):

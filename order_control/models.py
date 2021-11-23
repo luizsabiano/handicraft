@@ -6,18 +6,25 @@ PAYMENT_CHOICES = (
     ('CC', 'Cartão de Crédito'),
     ('CD', 'Cartão de Débito'),
     ('CASH', 'Dinheiro'),
-    ('cc', 'Depósito'),
+    ('DCC', 'Depósito Conta Corrente'),
 )
 
 BOX_TOP_CHOICES = (
-    ('TOPO', 'TOPO DE BOLO'),
-    ('CAIXA', 'CAIXA BOX'),
-    ('Tag', 'Tag'),
-    ('outros', 'Outros'),
+    ('TOPPER', 'TOPO DE BOLO'),
+    ('BOX', 'CAIXA BOX'),
+    ('TAG', 'TAG'),
+    ('OTHERS', 'OUTROS'),
 )
 
+GROUP_CHOICES = (
+    ('AD', 'ADMINISTRADOR'),
+    ('HC', 'ARTESÃ'),
+    ('CM', 'BOLEIRA'),
+    ('CL', 'CLIENTE')
+)
 
 # classe cliente. Atributo balance: se negativo o cliente é devedor, se positivo ele tem haver
+
 
 class Client (models.Model):
     createAt = models.DateTimeField(auto_now_add=True)
@@ -25,7 +32,9 @@ class Client (models.Model):
     phone = models.CharField(max_length=15, null=True, blank=True, verbose_name='Telefone')
     picture = models.FileField(upload_to='clients/', null=True, blank=True, verbose_name='Foto de Perfil')
     balance = models.DecimalField(max_digits=8, decimal_places=2, default=0.0, verbose_name='Balanço')
+    active = models.BooleanField(default=True, verbose_name="Ativo")
     cakeMaker = models.BooleanField(default=False, verbose_name='Boleira')
+    password = models.CharField(max_length=50, verbose_name="Senha")
 
     class Meta:
         ordering = ['id']
@@ -84,8 +93,10 @@ class BoxTop(models.Model):
 class LoyatyCard(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     adhesiveCount = models.IntegerField(null=True, blank=True, default=0)
+    # Remover adhesiveCount -> Campo computado
     finishedAt = models.DateTimeField(null=True, blank=True, default=None)
     giftDate = models.DateTimeField(null=True,  blank=True)
+    # Remover o campo giftDate -> campo computado, a data do brinde é a data da entrega do item.
     giftTopOfCake = models.ForeignKey(BoxTop, on_delete=models.PROTECT, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     isDelivered = models.BooleanField(default=False, verbose_name="Está entregue?")

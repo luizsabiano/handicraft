@@ -19,6 +19,8 @@ from django.conf.urls.static import static
 from django.urls import path
 from order_control import views
 
+from rest_framework_simplejwt import views as jwt_views
+
 # api <--
 from rest_framework import routers
 from order_control.api import PurchaseViewSet, PurchasedItemsViewSet, OrderItemsViewSet, OrdersViewSet, ClientViewSet
@@ -38,6 +40,10 @@ router.register(r'clients', ClientViewSet)
 app_name = 'order_control'
 
 urlpatterns = [
+    path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('hello/', views.HelloView.as_view(), name='hello'),
+
     url(r'^api/', include(router.urls)),
 
     path('login/', views.LoginView.as_view(), name='login'),

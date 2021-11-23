@@ -1,7 +1,66 @@
 const event = new Vue();
 
+Vue.component('my-app', {
+    props: ['list'],
+    delimiters : ['[[', ']]'],
+    template: `
+        <div class="container">
+            <br/>
+            <div class="row">
+                <div class="col"><h1>Lista de Compras</h1></div>
+                <div class="col">
+                    <!-- navPagination -->
+                    <nav-pagination></nav-pagination>
+                </div>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            <div class="row">
+                                <div class="col-md-3">Data</div>
+                                <div class="col-md-3">Valor</div>
+                                <div class="col-md-2">Quant. Items</div>
+                                <div class="col-md-2">Acões</div>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(purchase, key) in list">
+                        <td>
+                            <div class="row">
+                                <div class="col-md-3">[[purchase['createAt'] ]]</div>
+                                <div class="col-md-3">[[purchase['amount'] ]]</div>
+                                <div class="col-md-2">[[purchase['items'].length ]]</div>
+                                <div class="col-md-2"><a href="#" @click.prevent="showItems(key)">Editar </a> | <a href="#" @click="excludePurchase([[purchase['id'] ]], key)">Excluir</a></div>
+                            </div>
+                            <div  :id="key" class="card" v-show="false">
+                                <br>
+                                <div class="col">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr v-for="(item, keyItem) in purchase['items']">
+                                            <td>[[ item['name'] ]]</td>
+                                            <td>[[ item['quantity'] ]]</td>
+                                            <td>[[ item['amount'] ]]</td>
+                                            <td><a href="#" @click="excludeItemsPurchase([[ item['id'] ]], key, keyItem)">Excluir</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
 
-var navPagination = Vue.extend({
+            </table>
+        </div>
+    `
+});
+
+
+Vue.component('nav-pagination', {
     delimiters : ['[[', ']]'],
     data: function() {
         return {
@@ -51,20 +110,13 @@ var navPagination = Vue.extend({
 });
 
 
-// Tentativa de retirar variável global
-// Funciona para integrar com modulos, porem tentei em componentes.
-// Vue.use(navPagination);
-// Erro: Cannot read property '_init' of null
-
 var vm = new Vue
 ({
+    template: '<my-app :list="list"></my-app>',
     delimiters : ['[[', ']]'],
     el: '#app',
     data: {
         list: [],
-    },
-    components: {
-        'nav-pagination': navPagination,
     },
     mounted: function(){
        this.getList('../api/purchases/');
