@@ -7,7 +7,6 @@ from django.core import serializers
 from django.db.models import Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
-from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView, UpdateView, DetailView
@@ -20,16 +19,8 @@ from handicraft import settings
 from order_control.form import ClientForm, OrderForm, BoxTopForm, PaymentForm
 from order_control.models import Client, Order, BoxTop, LoyatyCard, Adhesive, Payment, Purchase
 
-from datetime import date, datetime
+from datetime import datetime
 import calendar
-
-
-class HelloView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        content = {'message': 'Hello, World!'}
-        return Response(content)
 
 
 class LoginView(TemplateView):
