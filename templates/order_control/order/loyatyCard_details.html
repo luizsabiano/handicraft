@@ -39,17 +39,24 @@
 
                     </br>
                     <div class='form-control loyatyCard'  >
+                        </br></br></br>
                         <div class="row" >
                             {% for adhesive in adhesives %}
                                 {% if forloop.counter == 6 %}
                                     </div>
+                                    <br/>
                                     <div class="row" >
                                 {% endif %}
                                      <a href="{% url 'order_control:order_items_details' adhesive.topOfCake.id %}">
-                                    <div id="adhesive{{ adhesive.id}}" class="col adhesive" ></div>
+                                     <div id="adhesive{{ adhesive.id}}" class="col adhesive" ></div>
+                                     <span class='label label-default' style='font-size:11px;'>{{ adhesive.topOfCake.theme }}  </span>
+                                         <br>
+                                     <span class='label label-default' style='font-size:11px;'>{{ adhesive.topOfCake.birthdayName }}  </span>
+
                                  </a>
                             {% endfor %}
                         </div>
+                        </br></br></br></br>
                     </div>
                 </div>
             </div>

@@ -3,7 +3,6 @@ import decimal
 from rest_framework import viewsets, status, pagination
 from rest_framework.response import Response
 
-from handicraft import settings
 from order_control.models import Purchase, PurchasedItems, Order, BoxTop, Client
 from order_control.serializers import PurchaseSerializer, PurchasedItemsSerializer, OrderSerializer, BoxTopSerializer, \
     ClientSerializer
@@ -51,6 +50,7 @@ class OrdersViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
 
     def create(self,  request, *args, **kwargs):
+
         orderSerializer = OrderSerializer(data=request.data)
         if orderSerializer.is_valid():
             orderSerializer.save()
@@ -60,11 +60,11 @@ class OrdersViewSet(viewsets.ModelViewSet):
         else:
             return Response(orderSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        def destroy(self, request, *args, **kwargs):
+    def destroy(self, request, *args, **kwargs):
 
-            instance = self.get_object()
-            self.perform_destroy(instance)
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class OrderItemsViewSet(viewsets.ModelViewSet):

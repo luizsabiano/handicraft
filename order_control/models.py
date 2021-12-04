@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 PAYMENT_CHOICES = (
     ('PP', 'PicPay'),
@@ -42,6 +43,10 @@ class Client (models.Model):
     def __str__(self):
         return self.name
 
+    def is_cake_maker(self):
+        if self.cakeMaker: return True
+        return False
+
 
 # classe pedido. Os atributos totalOrder e totalPayment servem para
 # reduzir o processamento com consultas futuras onde deseja saber se
@@ -75,7 +80,7 @@ class BoxTop(models.Model):
     type = models.CharField(max_length=255, choices=BOX_TOP_CHOICES)
     theme = models.CharField(max_length=255)
     birthdayName = models.CharField(max_length=255, null=True, blank=True)
-    amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00, verbose_name='Valor total das Caixas R$')
+    amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00, verbose_name='Valor total R$')
     description = models.CharField(max_length=255, null=True, blank=True)
     storedIn = models.FileField(upload_to='boxes/', null=True, blank=True, verbose_name='Figura')
     order = models.ForeignKey(Order, related_name='items', on_delete=models.PROTECT)
@@ -84,11 +89,21 @@ class BoxTop(models.Model):
         unique_together = ['order', 'id']
         ordering = ['id']
 
+    def is_gift(self):
+        if self.gift:
+            return True
+        return False
+
+    def is_eligible_gift(self):
+        if self.type == "TOPPER" and not self.is_gift():
+            return True
+        return False
 
 
 # classe cartão fidelidade
 # if giftDate has a date and giftTopOfCake filled
 # the gift was delivered
+
 
 class LoyatyCard(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
@@ -101,9 +116,33 @@ class LoyatyCard(models.Model):
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     isDelivered = models.BooleanField(default=False, verbose_name="Está entregue?")
 
-
     def __str__(self):
         return 'Id: %d - Cliente: %s -  Adevivos: %d' % (self.id, self.client, self.adhesiveCount)
+
+    def giftSave(self, boxtop):
+        self.giftDate = timezone.now()
+        self.giftTopOfCake = boxtop
+        self.save()
+
+    def filter_eligible_loyaty_card(self, client):
+        loyaty = self.objects.filter(
+            client=client,
+            finishedAt__isnull=False,
+            giftTopOfCake__isnull=True).order_by('finishedAt')[0]
+        return loyaty
+
+    def add_adhesive(self, loyatyCard, box_top):
+        loyatyCard.adhesiveCount += 1;
+        loyatyCard.save()
+        adhesive = Adhesive(topOfCake=box_top, loyatyCard=loyatyCard)
+        adhesive.save()
+
+        # Caso complete 10 adesivos cria um novo cartao fidelidade.
+        if loyatyCard.adhesiveCount > 9:
+            loyatyCard.finishedAt = timezone.now()
+            loyatyCard.save()
+
+        # Fechar cartao fidelidade com 10 adesivos
 
 
 # A cada compra de topo a boleira ganha um adesivo

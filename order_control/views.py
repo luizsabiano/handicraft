@@ -11,14 +11,10 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView, UpdateView, DetailView
 from rest_framework import pagination
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from handicraft import settings
 from order_control.form import ClientForm, OrderForm, BoxTopForm, PaymentForm
 from order_control.models import Client, Order, BoxTop, LoyatyCard, Adhesive, Payment, Purchase
-
 from datetime import datetime
 import calendar
 
@@ -109,6 +105,27 @@ def client_details(request, id):
     return render(request, 'order_control/client/detail.html', {'client': client, 'orders': order, 'loyatyCards':loyatyCard})
 
 
+# ---------------------------------------------------------------- -----
+
+@login_required(login_url=reverse_lazy('order_control:login'))
+def order_create_vue(request):
+    form_submitted = False
+    if request.method == 'GET':
+        form = OrderForm()
+        box_top_form = BoxTopForm()
+    else:
+        form_submitted = True
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.save()
+            box_top_form = BoxTopForm()
+            box_top = BoxTop.objects.filter(order=order)
+            return render(request, 'order_control/order/order_add_items.html',
+                {'order': order, 'box_top_form': box_top_form, 'client': order.client, 'box_top': box_top})
+    return render(request, 'order_control/order/create_order.html', {'form': form, 'form_submitted': form_submitted, 'box_top_form': box_top_form})
+
+
 @login_required(login_url=reverse_lazy('order_control:login'))
 def order_create(request):
     form_submitted = False
@@ -125,6 +142,57 @@ def order_create(request):
             return render(request, 'order_control/order/order_add_items.html',
                 {'order': order, 'box_top_form': box_top_form, 'client': order.client, 'box_top': box_top})
     return render(request, 'order_control/order/create.html', {'form': form, 'form_submitted': form_submitted})
+
+
+def order_add_items(request):
+
+    if request.method == 'POST':
+        form = BoxTopForm(request.POST, request.FILES)
+        if form.is_valid():
+            box_top = form.save(commit=False)
+            box_top.order = Order.objects.get(id=request.POST['order'], )
+            box_top.save()
+            box_top.order.totalOrder += box_top.amount
+            box_top.order.save()
+            box_top.order.client.balance += box_top.amount
+            box_top.order.client.save()
+
+            client = box_top.order.client
+
+            if box_top.gift:
+
+                loyaty = LoyatyCard.objects.filter(
+                            client=client,
+                            finishedAt__isnull=False,
+                            giftTopOfCake__isnull=True).order_by('finishedAt')[0]
+
+                if loyaty:
+                    loyaty.giftSave(box_top)
+
+            # 25/11
+            # Caso o cliente seja uma boleira e a arte seja elegível a ganhar um adesivo
+            # Verificar se a cliente possui cartão fidelidade
+            # ou caso tenha verificar se este ja não esteja finalizado
+            # caso falso, inicia um novo cartão
+
+            if client.is_cake_maker() and box_top.is_eligible_gift():
+                if not LoyatyCard.objects.filter(client=client).exists() or \
+                        LoyatyCard.objects.filter(client=client).last().finishedAt:
+                    LoyatyCard(client=client).save()
+
+                # Pega o último cartão e adiciona um adesivo
+                loyaty_card = LoyatyCard.objects.filter(client=client).last()
+                loyaty_card.add_adhesive(loyaty_card, box_top)
+            # 25/11
+
+            box_top_json = serializers.serialize("json", BoxTop.objects.filter(order=box_top.order.id))
+            message = {"top_box": box_top_json}
+            return HttpResponse(
+                json.dumps(message),
+                content_type="application/json"
+            )
+
+# ---------------------------------------------------------------- -----
 
 
 @login_required(login_url=reverse_lazy('order_control:login'))
@@ -179,51 +247,6 @@ def order_destroy(request, id):
 
     return render(request, 'order_control/order/destroy.html',
                       {'order': order, 'form': form, 'items_order': items_order})
-
-
-def order_add_items(request):
-    if request.method == 'POST':
-        form = BoxTopForm(request.POST, request.FILES)
-        if form.is_valid():
-            box_top = form.save(commit=False)
-            box_top.order = Order.objects.get(id=request.POST['order'], )
-            box_top.save()
-            box_top.order.totalOrder += box_top.amount
-            box_top.order.save()
-            box_top.order.client.balance += box_top.amount
-            box_top.order.client.save()
-
-            if box_top.gift:
-                loyaties = LoyatyCard.objects.filter(client=box_top.order.client, finishedAt__isnull=False,
-                                                     giftTopOfCake__isnull=True).order_by('finishedAt')
-                if loyaties:
-                    loyaties[0].giftDate = timezone.now()
-                    loyaties[0].giftTopOfCake = box_top
-                    loyaties[0].save()
-
-            if box_top.order.client.cakeMaker is True and box_top.type == "TOPO" and not box_top.gift:
-                if not LoyatyCard.objects.filter(client=box_top.order.client).exists():
-                    LoyatyCard(client=box_top.order.client).save()
-                else:
-                    if LoyatyCard.objects.filter(client=box_top.order.client).last().finishedAt:
-                        LoyatyCard(client=box_top.order.client).save()
-
-                loyatyCard = LoyatyCard.objects.filter(client=box_top.order.client).last()
-                loyatyCard.adhesiveCount += 1;
-                loyatyCard.save()
-                adhesive = Adhesive(topOfCake=box_top, loyatyCard=loyatyCard)
-                adhesive.save()
-                if loyatyCard.adhesiveCount > 9:
-                    loyatyCard.finishedAt = timezone.now()
-                    loyatyCard.save()
-
-            # Fechar cartao fidelidade com 10 adesivos
-            box_top_json = serializers.serialize("json", BoxTop.objects.filter(order=box_top.order.id))
-            message = {"top_box": box_top_json}
-            return HttpResponse(
-                json.dumps(message),
-                content_type="application/json"
-            )
 
 
 @login_required(login_url=reverse_lazy('order_control:login'))

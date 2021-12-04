@@ -54,6 +54,7 @@ urlpatterns = [
     path('clients/<int:id>/detail/', views.client_details, name='client_detail'),
 
     path('order/', views.order_create, name='order_create'),
+    path('order_create/', views.order_create_vue, name='order_create_vue'),
     path('orders/', views.OrderListView.as_view(), name='order_list'),
     path('order_add_items/', views.order_add_items, name='order_add_items'),
     path('orders/<int:id>/update/', views.order_update, name='order_update'),

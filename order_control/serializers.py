@@ -1,6 +1,8 @@
+from time import timezone
+
 from rest_framework import serializers, pagination
 
-from order_control.models import Purchase, PurchasedItems, BoxTop, Order, Client
+from order_control.models import Purchase, PurchasedItems, BoxTop, Order, Client, LoyatyCard
 
 
 class PurchasedItemsSerializer(serializers.ModelSerializer):
@@ -51,8 +53,39 @@ class OrderSerializer(serializers.ModelSerializer):
         boxtop_data = validated_data.pop('items')
         order = Order.objects.create(**validated_data)
         for boxtop in boxtop_data:
-            BoxTop.objects.create(order=order, **boxtop)
+            box_top = BoxTop.objects.create(order=order, **boxtop)
+            self.add_gift_to_loyaty_card(order.client, box_top)
+
+            # 25/11
+            # Caso o cliente seja uma boleira e a arte seja elegível a ganhar um adesivo
+            # Verificar se a cliente possui cartão fidelidade
+            # ou caso tenha verificar se este ja não esteja finalizado
+            # caso falso, inicia um novo cartão
+            client = box_top.order.client
+            if client.is_cake_maker() and box_top.is_eligible_gift():
+                if not LoyatyCard.objects.filter(client=client).exists() or \
+                        LoyatyCard.objects.filter(client=client).last().finishedAt:
+                    LoyatyCard(client=client).save()
+
+                # Pega o último cartão e adiciona um adesivo
+                loyaty_card = LoyatyCard.objects.filter(client=client).last()
+                loyaty_card.add_adhesive(loyaty_card, box_top)
+            # 25/11
+
         return order
+
+    @staticmethod
+    def add_gift_to_loyaty_card(client, boxtop):
+        # check if top is a gift
+        if boxtop.is_gift():
+            loyaty = LoyatyCard.objects.filter(
+                client=client,
+                finishedAt__isnull=False,
+                giftTopOfCake__isnull=True).order_by('finishedAt')[0]
+
+            # check if loyaty is null
+            if loyaty:
+                loyaty.giftSave(boxtop)
 
 
 class ClientSerializer(serializers.ModelSerializer):

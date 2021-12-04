@@ -1,0 +1,196 @@
+{% extends "layout.html" %}
+
+{% block title %}Pedido do Cliente{% endblock %}
+
+{% block content %}
+    <div class="container" id="app">
+        </br>
+        <div class="row">
+           <div id="head2" class="col-sm-9">
+               <div class="row">
+                   <div class="col">
+                       <div class="form-group">
+                           <select name="client" required id="id_client" class="form-control js-example-basic-single">
+                               {% if order.client is none  %}
+                                    <option value="" disabled selected> Selecione o cliente</option>
+                                    {% for field in form.fields.client.queryset %}
+                                        <option value="{{ field.id }}">{{ field.name}}</option>
+                                    {% endfor %}
+                               {% else %}
+                                    {% for field in form.fields.client.queryset %}
+                                        {% if order.client.name ==  field.name %}
+                                            <option value="{{ field.id }}" selected="selected">{{ field.name}}</option>
+                                        {% else %}
+                                            <option value="{{ field.id }}">{{ field.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                               {% endif %}
+                           </select>
+                        </div>
+                   </div>
+                   <div class="col">
+                       <div class="form-group">
+                           <div class="row">
+                               <div class="col">
+                                   <div class="form-group">
+                                        {{ form.deliveryAt.label_tag }}
+                                        {{ form.deliveryAt }}
+                                    <div class="invalid-feedback">
+                                        {{ form.deliveryAt.errors }}
+                                        </div>
+                                    -
+                                        {{ form.delivered.label_tag }}
+                                        {{ form.delivered }}
+                                    <div class="invalid-feedback">
+                                        {{ form.delivered.errors }}
+                                    </div>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+
+               <div class="form-group">
+                   {{ form.description }}
+                   <div class="invalid-feedback">
+                       {{ form.description.errors }}
+                   </div>
+               </div>
+           </div>
+           <div id="photo_client" class="col-sm-3" align="center">
+               <img src="{{ MEDIA_URL}}{{ box_top_form.storedIn.value }}" class="img-thumbnail img-fluid" >
+           </div>
+        </div>
+
+        <hr/>
+
+        <div class="row">
+           <div id="head" class="col-sm-9">
+               <div class="row">
+                   <div class="col">
+                       <div class="form-group">
+                            {{ box_top_form.type.label_tag }}
+                            {{ box_top_form.type }}
+                            <div class="invalid-feedback">
+                                {{ box_top_form.type.errors }}
+                            </div>
+                       </div>
+                   </div>
+                   <div class="col">
+                       <div class="form-group">
+                           {{ box_top_form.storedIn.label_tag }}
+                           {{ box_top_form.storedIn }}
+                           <div class="invalid-feedback">
+                               {{ box_top_form.storedIn.errors }}
+                           </div>
+                       </div>
+                   </div>
+               </div>
+
+               <div class="row">
+                   <div class="col">
+                       <div class="form-group">
+                            {{ box_top_form.theme }}
+                            <div class="invalid-feedback">
+                                {{ box_top_form.theme.errors }}
+                            </div>
+                       </div>
+                   </div>
+
+                   <div class="col">
+                       <div class="form-group">
+                            {{ box_top_form.birthdayName }}
+                            <div class="invalid-feedback">
+                                {{ box_top_form.birthdayName.errors }}
+                            </div>
+                       </div>
+                   </div>
+               </div>
+
+
+                <div class="form-group">
+                    <div class="form-control">
+                        {{ box_top_form.amount.label_tag }}
+                        {{ box_top_form.amount }}
+                        <div class="invalid-feedback">
+                            {{ box_top_form.amount.errors }}
+                        </div>
+                        <label> &nbsp&nbsp
+                        </label>
+                        {{ box_top_form.gift.label_tag }}
+                        {{ box_top_form.gift }}
+                        <div class="invalid-feedback">
+                            {{ box_top_form.gift.errors }}
+                        </div>
+                    </div>
+
+                </div>
+
+           </div>
+
+           <div id="photo" class="col-sm-3" align="center">
+               <img src="{{ MEDIA_URL}}{{ box_top_form.storedIn.value }}" class="img-thumbnail img-fluid" >
+           </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <button id="caixaBoxCreate" type="submit" class="btn btn-primary">Incluir Arte</button>
+                <div id="caixaBoxCreate2" class="btn btn-primary">Finalizar</div>
+            </div>
+            <div class="col-sm-6">
+                            <div class="form-control">
+                                <label >Total de itens:  </label>
+                                <label>
+                                            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                        Valor total: R$ 0,00
+                                </label>
+                            </div>
+                        </div>
+        </div>
+
+
+        <p/>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Tema</th>
+                    <th>Aniversariante</th>
+                    <th>Valor</th>
+                    <th>Brinde</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, key) in items">
+                    <td>[[ item['name'] ]]</td>
+                    <td>[[ item['quantity'] ]]</td>
+                    <td>[[ item['quantity'] ]]</td>
+                    <td>[[ item['amount'] ]]</td>
+                    <td>[[ item['amount'] ]]</td>
+                    <td>
+                        <a href="#" @click="editItem(key)">Editar </a> | <a href="#" @click="excludeItem(key)">Excluir</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+     <script>
+        $(document).ready(function() {
+          $('.js-example-basic-single').select2();
+        });
+    </script>
+
+    {% load static %}
+
+    <script type="text/javascript" src="{% static '/order_control/js/lib/vue.js' %}"></script>
+    <script type="text/javascript" src="{% static '/order_control/js/axiosGet_csrftoken.js' %}"></script>
+    <script type="text/javascript" src="{% static '/order_control/js/orders/vue_create_order.js' %}"></script>
+
+{% endblock %}

@@ -23,7 +23,7 @@ class OrderForm(forms.ModelForm):
         localize = True,
         widgets = {
             'deliveryAt': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Descrição do Pedido'}),
         }
         fields = ('deliveryAt', 'delivered', 'description', 'downPayment', 'totalOrder', 'totalPayment', 'client')
 
@@ -39,7 +39,7 @@ class BoxTopForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descrição'}),
             'storedIn': forms.FileInput(attrs={'class': 'form-control', 'required': False, 'placeholder': 'Foto'})
         }
-        fields = ('type', 'theme','gift', 'birthdayName', 'amount', 'description', 'storedIn')
+        fields = ('type', 'theme', 'gift', 'birthdayName', 'amount', 'description', 'storedIn')
 
 
 class PaymentForm(forms.ModelForm):
