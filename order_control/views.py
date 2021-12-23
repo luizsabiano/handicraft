@@ -19,6 +19,34 @@ from datetime import datetime
 import calendar
 
 
+def client_eligible_gift(request):
+
+    eligible = "False"
+    adhesives_quantity = "0"
+    client_id = int(json.loads(request.body))
+    client = Client.objects.get(id=client_id)
+
+    loyaty = LoyatyCard.objects.filter(
+        client=client,
+        finishedAt__isnull=False,
+        giftTopOfCake__isnull=True).order_by('finishedAt')
+
+    if loyaty:
+        eligible = "True"
+    else:
+        loyaty = LoyatyCard.objects.filter(
+            client=client,
+            finishedAt__isnull=True,
+            giftTopOfCake__isnull=True).order_by('finishedAt')
+        if loyaty:
+            adhesives_quantity = loyaty[0].adhesiveCount
+
+    return HttpResponse(
+        json.dumps({'eligible': eligible, 'adhesives_quantity': adhesives_quantity}),
+        content_type="application/json"
+    )
+
+
 class LoginView(TemplateView):
     template_name = 'order_control/login.html'
 
@@ -36,6 +64,7 @@ class LoginView(TemplateView):
 
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'order_control/index.html'
+
     def post(self, request, *args, **kwargs):
         dataConsulta = request.POST.get('message')
         baseDate = datetime.strptime(dataConsulta + '-01', '%Y-%m-%d').date()

@@ -132,7 +132,7 @@ class LoyatyCard(models.Model):
         return loyaty
 
     def add_adhesive(self, loyatyCard, box_top):
-        loyatyCard.adhesiveCount += 1;
+        loyatyCard.adhesiveCount += 1
         loyatyCard.save()
         adhesive = Adhesive(topOfCake=box_top, loyatyCard=loyatyCard)
         adhesive.save()

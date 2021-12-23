@@ -23,9 +23,16 @@ class OrderForm(forms.ModelForm):
         localize = True,
         widgets = {
             'deliveryAt': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Descrição do Pedido'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descrição do Pedido'}),
         }
         fields = ('deliveryAt', 'delivered', 'description', 'downPayment', 'totalOrder', 'totalPayment', 'client')
+
+    def __init__(self, *args, **kwargs):
+        super(OrderForm, self).__init__(*args, **kwargs)
+
+        for name, field in self.fields.items():
+            # add v-model to each model field
+            field.widget.attrs.update({'v-model': name})
 
 
 class BoxTopForm(forms.ModelForm):
@@ -33,13 +40,25 @@ class BoxTopForm(forms.ModelForm):
     class Meta:
         model = BoxTop
         widgets = {
-            'type': forms.Select(attrs={'class': 'form-control'}),
+            'type': forms.Select(attrs={'class': 'form-control', 'v-model': 'type'}),
             'theme': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tema'}),
             'birthdayName': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome do Aniversariante'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descrição'}),
-            'storedIn': forms.FileInput(attrs={'class': 'form-control', 'required': False, 'placeholder': 'Foto'})
+            'storedIn': forms.FileInput(attrs={'@change': 'previewFiles',
+                                               'class': 'form-control',
+                                               'required': False,
+                                               'placeholder': 'Foto',
+                                                'accept': 'image/jpeg, image/png'}),
+            'gift': forms.CheckboxInput(attrs={':checked': 'isGift()'})
         }
-        fields = ('type', 'theme', 'gift', 'birthdayName', 'amount', 'description', 'storedIn')
+        fields = ('type', 'theme', 'gift', 'birthdayName', 'amount', 'storedIn')
+
+    def __init__(self, *args, **kwargs):
+        super(BoxTopForm, self).__init__(*args, **kwargs)
+
+        for name, field in self.fields.items():
+            # add v-model to each model field
+            if name != "storedIn":
+                field.widget.attrs.update({'v-model': name})
 
 
 class PaymentForm(forms.ModelForm):

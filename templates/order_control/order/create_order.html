@@ -1,8 +1,17 @@
 {% extends "layout.html" %}
 
 {% block title %}Pedido do Cliente{% endblock %}
-
 {% block content %}
+     <script type="text/javascript">
+         var clients = [];
+     </script>
+     {% for field in form.fields.client.queryset %}
+        <script type="text/javascript">
+            clients['{{ field.id }}'] = { name: '{{ field.name }}', picture: '{{ field.picture }}' };
+        </script>
+    {% endfor %}
+
+
     <div class="container" id="app">
         </br>
         <div class="row">
@@ -10,19 +19,13 @@
                <div class="row">
                    <div class="col">
                        <div class="form-group">
-                           <select name="client" required id="id_client" class="form-control js-example-basic-single">
+                           <select name="client" required id="id_client"
+                                   class="form-control js-example-basic-single"
+                                   v-model="client">
                                {% if order.client is none  %}
-                                    <option value="" disabled selected> Selecione o cliente</option>
+                                    <option value="0" disabled selected> Selecione o cliente</option>
                                     {% for field in form.fields.client.queryset %}
                                         <option value="{{ field.id }}">{{ field.name}}</option>
-                                    {% endfor %}
-                               {% else %}
-                                    {% for field in form.fields.client.queryset %}
-                                        {% if order.client.name ==  field.name %}
-                                            <option value="{{ field.id }}" selected="selected">{{ field.name}}</option>
-                                        {% else %}
-                                            <option value="{{ field.id }}">{{ field.name}}</option>
-                                        {% endif %}
                                     {% endfor %}
                                {% endif %}
                            </select>
@@ -30,42 +33,39 @@
                    </div>
                    <div class="col">
                        <div class="form-group">
-                           <div class="row">
-                               <div class="col">
-                                   <div class="form-group">
-                                        {{ form.deliveryAt.label_tag }}
-                                        {{ form.deliveryAt }}
-                                    <div class="invalid-feedback">
-                                        {{ form.deliveryAt.errors }}
-                                        </div>
-                                    -
-                                        {{ form.delivered.label_tag }}
-                                        {{ form.delivered }}
-                                    <div class="invalid-feedback">
-                                        {{ form.delivered.errors }}
-                                    </div>
-                                   </div>
-                               </div>
-                           </div>
+
+                           {{ form.deliveryAt }}
+                            <div class="invalid-feedback">
+                                {{ form.deliveryAt.errors }}
+                            </div>
+                            - <span style="padding-left:1%">Entregue:</span>
+
+                            {{ form.delivered }}
+                            <div class="invalid-feedback">
+                                {{ form.delivered.errors }}
+                            </div>
                        </div>
                    </div>
                </div>
-
                <div class="form-group">
                    {{ form.description }}
                    <div class="invalid-feedback">
                        {{ form.description.errors }}
                    </div>
                </div>
+
+
            </div>
            <div id="photo_client" class="col-sm-3" align="center">
-               <img src="{{ MEDIA_URL}}{{ box_top_form.storedIn.value }}" class="img-thumbnail img-fluid" >
+               <img v-bind:src="'{{ MEDIA_URL}}'+ avatar"
+                    class="img-thumbnail img-fluid"
+                    width="100">
            </div>
         </div>
 
         <hr/>
 
-        <div class="row">
+        <div class="row" styole="border:solid">
            <div id="head" class="col-sm-9">
                <div class="row">
                    <div class="col">
@@ -123,32 +123,41 @@
                         <div class="invalid-feedback">
                             {{ box_top_form.gift.errors }}
                         </div>
+                        <label> &nbsp&nbsp&nbsp&nbsp
+                        </label>
+                        <label style="color:red"> [[message_gift_feed_back]]</label>
                     </div>
 
                 </div>
-
-           </div>
-
-           <div id="photo" class="col-sm-3" align="center">
-               <img src="{{ MEDIA_URL}}{{ box_top_form.storedIn.value }}" class="img-thumbnail img-fluid" >
-           </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-3">
-                <button id="caixaBoxCreate" type="submit" class="btn btn-primary">Incluir Arte</button>
-                <div id="caixaBoxCreate2" class="btn btn-primary">Finalizar</div>
+               <div class="row">
+            <div class="col-sm-6">
+                {% csrf_token %}
+                <div class="btn btn-primary" v-on:click="includeItem">[[ button ]]
+                </div> <div class="btn btn-primary" v-on:click="salveOrder">Salvar</div>
             </div>
             <div class="col-sm-6">
                             <div class="form-control">
-                                <label >Total de itens:  </label>
+                                <label >Total de itens:  [[itemsQuantity]] </label>
                                 <label>
                                             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                                             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-                                        Valor total: R$ 0,00
+                                        Valor total: R$ [[formatPrice(totalOrder)]]
                                 </label>
                             </div>
                         </div>
         </div>
+
+           </div>
+
+           <div id="photo" class="col-sm-3" align="center">
+               <img v-bind:src="artPreview"
+                    class="img-thumbnail img-fluid"
+                    width="175" >
+           </div>
+
+
+        </div>
+
 
 
         <p/>
@@ -165,11 +174,11 @@
             </thead>
             <tbody>
                 <tr v-for="(item, key) in items">
-                    <td>[[ item['name'] ]]</td>
-                    <td>[[ item['quantity'] ]]</td>
-                    <td>[[ item['quantity'] ]]</td>
-                    <td>[[ item['amount'] ]]</td>
-                    <td>[[ item['amount'] ]]</td>
+                    <td>[[ item['type'] ]]</td>
+                    <td>[[ item['theme'] ]]</td>
+                    <td>[[ item['birthdayName'] ]]</td>
+                    <td>[[ formatPrice(item['amount']) ]]</td>
+                    <td>[[ item['gift'] ? 'Sim' : 'Não' ]]</td>
                     <td>
                         <a href="#" @click="editItem(key)">Editar </a> | <a href="#" @click="excludeItem(key)">Excluir</a>
                     </td>
@@ -181,16 +190,26 @@
 
 
 
-     <script>
-        $(document).ready(function() {
-          $('.js-example-basic-single').select2();
-        });
-    </script>
-
     {% load static %}
 
     <script type="text/javascript" src="{% static '/order_control/js/lib/vue.js' %}"></script>
-    <script type="text/javascript" src="{% static '/order_control/js/axiosGet_csrftoken.js' %}"></script>
     <script type="text/javascript" src="{% static '/order_control/js/orders/vue_create_order.js' %}"></script>
+    <script type="text/javascript" src="{% static '/order_control/js/axiosGet_csrftoken.js' %}"></script>
+
+    <script type="text/javascript">
+         vm.loadClients(clients);
+         vm.loadMediaAddress('{{ MEDIA_URL}}');
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.js-example-basic-single').select2();
+            $('#id_client').on('select2:select', function (e) {
+                client_id = e.params.data.id;
+                vm.selectedClient(client_id);
+            });
+        });
+    </script>
+
 
 {% endblock %}

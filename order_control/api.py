@@ -1,5 +1,6 @@
 import decimal
 
+from django.http import QueryDict
 from rest_framework import viewsets, status, pagination
 from rest_framework.response import Response
 
@@ -7,18 +8,20 @@ from order_control.models import Purchase, PurchasedItems, Order, BoxTop, Client
 from order_control.serializers import PurchaseSerializer, PurchasedItemsSerializer, OrderSerializer, BoxTopSerializer, \
     ClientSerializer
 
+import json
+
 
 class PurchaseViewSet(viewsets.ModelViewSet):
     serializer_class = PurchaseSerializer
     queryset = Purchase.objects.all()
 
-    def create(self,  request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         purchaseSerializer = PurchaseSerializer(data=request.data)
         if purchaseSerializer.is_valid():
             purchaseSerializer.save()
             data = purchaseSerializer.data
             headers = self.get_success_headers(purchaseSerializer.data)
-            return Response(data, status=status.HTTP_201_CREATED,  headers=headers)
+            return Response(data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response(purchaseSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -49,14 +52,30 @@ class OrdersViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
 
-    def create(self,  request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
+        dataDict = {}
+        dataDict['deliveryAt'] = request.data['deliveryAt']
+        dataDict['delivered'] = json.loads(request.data['delivered'].lower())
+        if request.data['description'] == 'null':
+            dataDict['description'] = json.loads(request.data['description'])
+        else:
+            dataDict['description'] = request.data['description']
+        dataDict['totalOrder'] = json.loads(request.data['totalOrder'])
+        dataDict['client'] = json.loads(request.data['client'])
+        dataDict['items'] = json.loads(request.data['items'])
 
-        orderSerializer = OrderSerializer(data=request.data)
+        file = request.FILES
+        print("files: ", file)
+        for key in range(len(dataDict['items'])):
+            dataDict['items'][key]['storedIn'] = file[dataDict['items'][key]['storedIn']]
+
+        orderSerializer = OrderSerializer(data=dataDict)
+
         if orderSerializer.is_valid():
             orderSerializer.save()
             data = orderSerializer.data
             headers = self.get_success_headers(orderSerializer.data)
-            return Response(data, status=status.HTTP_201_CREATED,  headers=headers)
+            return Response(data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response(orderSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
