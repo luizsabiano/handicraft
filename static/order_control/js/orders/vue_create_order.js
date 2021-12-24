@@ -21,6 +21,7 @@ var vm = new Vue
         birthdayName: null,
         amount: null,
         gift: false,
+        wasGiftInGrid: false,
         message_gift_feed_back: '',
         id_storedIn: null,
         storedIn: [],
@@ -52,7 +53,12 @@ var vm = new Vue
         },
         isGift(){
             if (this.gift && this.client) {
-                axios.post("./eligible_gift/", this.client)
+                if (this.wasGiftInGrid || this.items.length > 0)
+                    this.message_gift_feed_back = "Brinde deve ser o primeiro da lista!";
+                else if ( this.type != "TOPPER")
+                    this.message_gift_feed_back = "Só topos podem ser brindes";
+                else {
+                    axios.post("./eligible_gift/", this.client)
                     .then(response => {
                         if (response.data.eligible == 'False'){
                             this.message_gift_feed_back = "Cliente só possui " + response.data.adhesives_quantity + " adesivos";
@@ -79,6 +85,7 @@ var vm = new Vue
                              'X-CSRFTOKEN': csrftoken,
                          },
                     });
+                }
             } else if (!this.client && this.gift){
                 this.message_gift_feed_back = "Selecione o cliente!!";
             }
@@ -137,11 +144,13 @@ var vm = new Vue
                     this.description = '';
                     $("#id_client ").val("0").change();
                     $("#id_storedIn").val('');
+                    this.id_storedIn = null;
                     this.type = '';
                     this.message_gift_feed_back = '';
                     this.delivered = false;
                     this.deliveryAt = this.resetDate;
                     this.artPreview = this.noImage;
+
                 })
                 .catch(error => { console.log(error.response)  },
                 { headers: { 'X-CSRFTOKEN': csrftoken, }, }
@@ -181,13 +190,17 @@ var vm = new Vue
                 this.birthdayName = null;
                 this.amount = null;
                 this.gift = false;
+                $("#id_storedIn").val('');
+                this.id_storedIn = null;
 
             }
         },
         excludeItem(keyItem){
             this.totalOrder -= parseFloat(this.items[keyItem].amount);
+            this.storedIn.splice(keyItem, 1)
             this.$delete(this.items, keyItem);
             this.itemsQuantity -= 1;
+
         },
         editItem(keyItem){
             this.button=='Incluir Item' ? this.button = 'Editar Item' : '';
@@ -198,6 +211,9 @@ var vm = new Vue
             this.birthdayName = this.items[keyItem]['birthdayName'];
             this.amount = this.items[keyItem]['amount'];
             this.gift = this.items[keyItem]['gift'];
+            this.id_storedIn = this.items[keyItem]['storedIn'];
+            $("#id_storedIn").val(this.id_storedIn);
+
             this.$delete(this.items, keyItem);
 
         },

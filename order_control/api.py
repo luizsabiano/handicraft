@@ -55,6 +55,7 @@ class OrdersViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         dataDict = {}
         dataDict['deliveryAt'] = request.data['deliveryAt']
+        print("DeliveryAt", dataDict['deliveryAt'])
         dataDict['delivered'] = json.loads(request.data['delivered'].lower())
         if request.data['description'] == 'null':
             dataDict['description'] = json.loads(request.data['description'])
@@ -64,10 +65,12 @@ class OrdersViewSet(viewsets.ModelViewSet):
         dataDict['client'] = json.loads(request.data['client'])
         dataDict['items'] = json.loads(request.data['items'])
 
-        file = request.FILES
-        print("files: ", file)
-        for key in range(len(dataDict['items'])):
-            dataDict['items'][key]['storedIn'] = file[dataDict['items'][key]['storedIn']]
+        if request.FILES:
+            file = request.FILES
+            print("files: ", file)
+            for key in range(len(dataDict['items'])):
+                if dataDict['items'][key]['storedIn']:
+                    dataDict['items'][key]['storedIn'] = file[dataDict['items'][key]['storedIn']]
 
         orderSerializer = OrderSerializer(data=dataDict)
 

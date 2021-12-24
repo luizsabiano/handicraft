@@ -45,7 +45,6 @@ class BoxTopForm(forms.ModelForm):
             'birthdayName': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome do Aniversariante'}),
             'storedIn': forms.FileInput(attrs={'@change': 'previewFiles',
                                                'class': 'form-control',
-                                               'required': False,
                                                'placeholder': 'Foto',
                                                 'accept': 'image/jpeg, image/png'}),
             'gift': forms.CheckboxInput(attrs={':checked': 'isGift()'})
