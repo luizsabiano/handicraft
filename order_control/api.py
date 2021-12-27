@@ -55,15 +55,21 @@ class OrdersViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         dataDict = {}
         dataDict['deliveryAt'] = request.data['deliveryAt']
-        print("DeliveryAt", dataDict['deliveryAt'])
+        #print("DeliveryAt", dataDict['deliveryAt'])
         dataDict['delivered'] = json.loads(request.data['delivered'].lower())
+
         if request.data['description'] == 'null':
             dataDict['description'] = json.loads(request.data['description'])
         else:
             dataDict['description'] = request.data['description']
+
         dataDict['totalOrder'] = json.loads(request.data['totalOrder'])
         dataDict['client'] = json.loads(request.data['client'])
         dataDict['items'] = json.loads(request.data['items'])
+
+        print("dataDict", dataDict)
+        print('request.data', request.data)
+
 
         if request.FILES:
             file = request.FILES

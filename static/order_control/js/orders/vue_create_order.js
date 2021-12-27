@@ -126,12 +126,40 @@ var vm = new Vue
                     "../api/orders/",
                     formData, {
                         headers: {
-                            'Content-Type': 'multipart/form-data'
+                            'Content-Type': 'multipart/form-data',
+                             headers: { 'X-CSRFTOKEN': csrftoken,}
                         }
                     }
                 )
                 .then(response => {
-                    console.log(response)
+                  //  console.log(response['data']);
+
+                    dict = response['data'];
+                     stringResponseItem = "<ul>";
+                     for(var key in dict) {
+                         if (Array.isArray(dict[key]))
+                            dict[key].forEach(function (item, indice, array) {
+                                stringResponseItem += "<li>" ;
+                                stringResponseItem += "Tipo: " + item['type'] + ", " ;
+                                stringResponseItem += "Tema: " + item['theme'] + ", " ;
+                                stringResponseItem += "Aniversariante: " + item['birthdayName'] + ", " ;
+                                stringResponseItem += "Valor: " + item['amount'];
+                                if (item['gift'])
+                                    stringResponseItem += "Presente, "  ;
+                                stringResponseItem += "</li>" ;
+                                console.log("string: ", stringResponseItem);
+
+                         });
+                     }
+                     stringResponseItem += "</ul>";
+
+                     this.showToast("success","<div> Pedido criado com sucesso <br> " +
+                                     "Id: <a href='../orders/" + JSON.stringify(response['data']['id']) + "/update/'>"  +
+                                                      "<span class='label label-default' style='font-size:14px;' >" +
+                                                       "<strong>" + JSON.stringify(response['data']['id']) + "</strong></span> </a> </br> " +
+                                                        "Cliente: " + this.clients[response['data']['client']].name  + "<br>" +
+                                                         stringResponseItem + "</div>" );
+
                     this.totalOrder = parseFloat(0);
                     this.itemsQuantity = 0;
 
@@ -152,8 +180,11 @@ var vm = new Vue
                     this.artPreview = this.noImage;
 
                 })
-                .catch(error => { console.log(error.response)  },
-                { headers: { 'X-CSRFTOKEN': csrftoken, }, }
+                .catch(error => {
+                    console.log(error.response);
+                    this.showToast("error", "Erro --> " + error.response.request['response'])
+                    }
+                //, { headers: { 'X-CSRFTOKEN': csrftoken, }, }
                 );
             }
         },
@@ -181,7 +212,6 @@ var vm = new Vue
                 })
                 if (this.id_storedIn != null)
                     this.storedIn.push(this.id_storedIn)
-
 
                 this.totalOrder += parseFloat(this.amount);
                 this.itemsQuantity += 1;
@@ -219,6 +249,25 @@ var vm = new Vue
         },
         toFormData(o) {
             return Object.entries(o).reduce((d,e) => (d.append(...e),d), new FormData())
+        },
+        showToast(method,response){
+            toastr.options = {
+            "closeButton": false,
+            "debug": true,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-full-width",
+            "preventDuplicates": false,
+            "showDuration": "300",
+            "hideDuration": "1000000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
         }
+        toastr[method](response);
+        },
    },
 })
