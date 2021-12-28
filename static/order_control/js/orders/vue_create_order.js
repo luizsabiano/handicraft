@@ -95,7 +95,7 @@ var vm = new Vue
             return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
         },
         salveOrder () {
-            if (this.items && this.client) {
+            if (this.items.length > 0 && this.client != 0) {
                 var data = {
                     "deliveryAt": new Date(this.deliveryAt),
                     "delivered": this.delivered,
@@ -187,6 +187,12 @@ var vm = new Vue
                 //, { headers: { 'X-CSRFTOKEN': csrftoken, }, }
                 );
             }
+            else {
+                if (this.client == 0)
+                    this.showToast("error", "Erro, Nenhum cliente selecionado! " )
+                else this.showToast("error", "Erro, Nenhum item foi incluso! " )
+                }
+
         },
         formatPrice(value) {
             let val = (value/1).toFixed(2).replace('.', ',')
