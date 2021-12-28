@@ -55,6 +55,8 @@ class OrderSerializer(serializers.ModelSerializer):
         for boxtop in boxtop_data:
             box_top = BoxTop.objects.create(order=order, **boxtop)
             self.add_gift_to_loyaty_card(order.client, box_top)
+            box_top.order.client.balance += box_top.amount
+            box_top.order.client.save()
 
             # 25/11
             # Caso o cliente seja uma boleira e a arte seja elegível a ganhar um adesivo

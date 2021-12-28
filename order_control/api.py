@@ -1,6 +1,6 @@
 import decimal
 
-from django.http import QueryDict
+from decimal import Decimal
 from rest_framework import viewsets, status, pagination
 from rest_framework.response import Response
 
@@ -63,7 +63,7 @@ class OrdersViewSet(viewsets.ModelViewSet):
         else:
             dataDict['description'] = request.data['description']
 
-        dataDict['totalOrder'] = json.loads(request.data['totalOrder'])
+        dataDict['totalOrder'] = Decimal(json.loads(request.data['totalOrder']))
         dataDict['client'] = json.loads(request.data['client'])
         dataDict['items'] = json.loads(request.data['items'])
 
