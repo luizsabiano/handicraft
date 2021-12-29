@@ -7,58 +7,77 @@
 
 <div id="app">
     <br/>
-    <div class="row justify-content-md-center">
-         <div class="row">
-             <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example"  v-model="yearSelected">
-              <option v-for="(year, key) in years" :selected="year == yearSelected">[[year]]</option>
-            </select>
-            <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" @change="onChange">
-              <option :value="yearSelected + '-' + parseInt(key +1) " v-for="(month, key) in months" :selected="months[(key)] == monthSelected">[[month]] / [[yearSelected]]</option>
-            </select>
-            <div class="col">
-                <input type="checkbox" id="cakeMaker" @change="onChangeCheckbox" v-model="isChecked">
-                <label for="cakeMaker">Exibir somente Boleiras </label>
-            </div>
-         </div>
-    </div>
 
-    <br/><br/><br/>
     <!-- div Google chart  -->
-    <div class="row">
-        <div class="col">
-            <div class="row justify-content-md-center" ><h3>Arrecadação: <span class="badge badge-secondary"> R$ [[ vue_totalMensal ]] </span></h3></div>
-            <div id="chartPizza" class="row justify-content-md-center" style="width: 800px; height: 550px;" > </div>
-        </div>
+    <div class="container">
 
-        <div class="col">
-            <div class="row justify-content-md-center">
+        <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+                 <div class="row justify-content-md-center">
+                     <div class="row">
+                         <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example"  v-model="yearSelected">
+                          <option v-for="(year, key) in years" :selected="year == yearSelected">[[year]]</option>
+                        </select>
+                        <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" @change="onChange">
+                          <option :value="yearSelected + '-' + parseInt(key +1) " v-for="(month, key) in months" :selected="months[(key)] == monthSelected">[[month]] / [[yearSelected]]</option>
+                        </select>
+                        <div class="col">
+                            <input type="checkbox" id="cakeMaker" @change="onChangeCheckbox" v-model="isChecked">
+                            <label for="cakeMaker">Exibir somente Boleiras </label>
+                        </div>
+                     </div>
+                </div>
+                <br/>
+                <div class="row justify-content-md-center">
+                    <table class="table" style="width: 800px;">
+                        <thead>
+                            <tr>
+                                <th>Arrecadação</th>
+                                <th>Despesas</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge badge-secondary">R$ [[ vue_totalMensal ]]</span></td>
+                                <td><span class="badge badge-secondary">R$ [[ vue_despesasTotal ]]</span></td>
+                                <td><h4><span class="badge badge-secondary">R$ [[ vue_totalMensal - vue_despesasTotal ]]</span></h4></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="chartPizza" class="row justify-content-md-center" style="width: 800px; height: 500px;" > </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-md-center">
+                    <table class="table" style="width: 800px;">
+                        <thead align="center">
+                            <th>
+                                <h4><strong>Cartões Fidelidade pendentes de brindes </strong></h4>
+                            </th>
+                        </thead>
+                    </table>
 
-                <table class="table" style="width: 500px;">
-                    <thead>
-                        <tr>
-                            <th>Arrecadação</th>
-                            <th>Despesas</th>
-                            <th>Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="badge badge-secondary">R$ [[ vue_totalMensal ]]</span></td>
-                            <td><span class="badge badge-secondary">R$ [[ vue_despesasTotal ]]</span></td>
-                            <td><span class="badge badge-secondary">R$ [[ vue_totalMensal - vue_despesasTotal ]]</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                    <table class="table" style="width: 800px;">
+                        <thead>
+                            <th>Cliente</th>
+                            <th>Quantidade de Cartões</th>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in loyatyCard">
+                                <td><a :href="'clients/' + item.client + '/detail/'"> [[item.client__name]] </a></td>
+                                <td> [[item.total]] </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="row justify-content-md-center">
-                <div id="curve_chart" style="width: 750px; height: 480px;"></div>
-            </div>
+          </div>
         </div>
 
     </div>
-
-
-
 </div>
 
     {% load static %}

@@ -18,8 +18,8 @@ $(window).load(function() {
                 vm.vue_purchasesgroupByDate = groupByDataPurchase(message.purchases);
                 vm.vue_paymentsgroupByDate =  _.orderBy(vm.vue_paymentsgroupByDate, 'createAt', 'asc');
 
-
-                drawChartLines(vueObjectToArrayLine(vm.vue_paymentsgroupByDate, vm.vue_purchasesgroupByDate));
+                vm.loyatyCard = message.loyatyCardsToGift;
+                console.log(vm.loyatyCard);
 
                 vm.vue_totalMensal = totalMensalCalc(vm.vue_payments);
                 vm.vue_despesasTotal =  DespesatotalMensalCalc(vm.vue_purchasesgroupByDate);
@@ -184,19 +184,5 @@ function drawChartPizza(dataToGraphsPizza) {
     };
 
     var chart = new google.visualization.PieChart(document.getElementById('chartPizza'));
-    chart.draw(data, options);
-}
-
-function drawChartLines(dataToGraphsLines) {
-    var data = google.visualization.arrayToDataTable(dataToGraphsLines);
-
-    var options = {
-      title: 'Arrecadação por dias do Mês',
-      curveType: 'function',
-      legend: { position: 'bottom' }
-    };
-
-    var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-
     chart.draw(data, options);
 }

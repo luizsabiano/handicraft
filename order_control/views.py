@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login as django_login, logout as d
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
 from django.urls import reverse_lazy
@@ -77,13 +77,23 @@ class HomeView(LoginRequiredMixin, TemplateView):
         # for t in teste: print(t)
         purchases = Purchase.objects.all().order_by('createAt').filter(createAt__range=(initialDate, finalDate))
         totalPayments = payments.aggregate(Sum('amount'))
+
+        # loyatyCard = LoyatyCard.objects.filter(finishedAt__isnull=False,
+        #                     giftTopOfCake__isnull=True).order_by('client')
+        loyatyCard = LoyatyCard.objects.filter(finishedAt__isnull=False,
+                            giftTopOfCake__isnull=True).values('client', 'client__name' ).annotate(total=Count('client')).order_by('total')
+
+        print("loyatCard --> ", list(loyatyCard))
+
         return JsonResponse({'payments': list(payments.values('id', 'type', 'createAt', 'amount',
                                                               'order__client__id',
                                                               'order__client__name',
                                                               'order__client__cakeMaker',
                                                               'order__client__balance')),
                              'totalPayments': totalPayments,
-                             'purchases': list(purchases.values())})
+                             'purchases': list(purchases.values()),
+                             'loyatyCardsToGift': list(loyatyCard.values('client', 'client__name', 'total'))
+                             })
 
 
 class FormSubmittedIncontextMixin:

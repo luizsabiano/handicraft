@@ -17,6 +17,11 @@ var vm = new Vue ({
         vue_totalMensal: 0,
         vue_despesasTotal:0,
         isChecked: false,
+        loyatyCard: {
+            total: 0,
+            client: 0,
+            client_name: "luiz sabiano",
+        },
         ordem: {
           colunas: ['amount'],
           orientacao: ['desc']
@@ -40,8 +45,6 @@ var vm = new Vue ({
                     vm.vue_purchasesgroupByDate = groupByDataPurchase(message.purchases);
                     vm.vue_paymentsgroupByDate =  _.orderBy(vm.vue_paymentsgroupByDate, 'createAt', 'asc');
 
-                    drawChartLines(vueObjectToArrayLine(vm.vue_paymentsgroupByDate, vm.vue_purchasesgroupByDate));
-
                     vm.vue_totalMensal = totalMensalCalc(vm.vue_payments);
                     vm.vue_despesasTotal =  DespesatotalMensalCalc(vm.vue_purchasesgroupByDate);
                 },
@@ -62,9 +65,6 @@ var vm = new Vue ({
             }
             else
                 paymentsGroupByDate = vm.vue_paymentsgroupByDate;
-
-            drawChartLines(vueObjectToArrayLine(paymentsGroupByDate, vm.vue_purchasesgroupByDate));
-
        }
     },
 })

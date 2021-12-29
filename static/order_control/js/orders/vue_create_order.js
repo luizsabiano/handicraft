@@ -189,8 +189,8 @@ var vm = new Vue
             }
             else {
                 if (this.client == 0)
-                    this.showToast("error", "Erro, Nenhum cliente selecionado! " )
-                else this.showToast("error", "Erro, Nenhum item foi incluso! " )
+                    this.showToast("error", "Erro, <strong>Nenhum cliente selecionado! </strong>" )
+                else this.showToast("error", "Erro, <strong>Nenhum item foi incluso! </strong>" )
                 }
 
         },
