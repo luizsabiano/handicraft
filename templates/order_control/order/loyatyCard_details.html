@@ -5,8 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
-     xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<div class="container">
         <h3> Detalhes do Cartão Fidelidade</h3>
         </br>
         <div class="form-group">
@@ -26,7 +25,9 @@
                             <a href="{% url 'order_control:client_detail'  loyatyCard.client.id %}">
                                 <strong>{{ loyatyCard.client.name }}</strong>
                             </a>
+                        </span>
                     </div>
+
                     <div class='form-control'>
                         <span class='label label-default' style='font-size:11px;'><strong>Cartão Fidelidade  </strong></span>
                         <span class='label label-default' style='font-size:14px;' ><strong>{{ loyatyCard.id }}</strong></span>
@@ -34,26 +35,35 @@
 
                     <div class='form-control'>
                             <input type="checkbox" id="delivered" v-model="isChecked">
-                            <label for="delivered" style='font-size:12px;'> Entregue </label>
+                            <label for="delivered" style='font-size:12px;'> Entregue</label>
                     </div>
 
                     </br>
-                    <div class='form-control loyatyCard'  >
+                    <div class='loyatyCard'  >
                         </br></br></br>
-                        <div class="row" >
+                        <div class="row  justify-content-md-center" style="padding-top: 30px;"    >
                             {% for adhesive in adhesives %}
                                 {% if forloop.counter == 6 %}
                                     </div>
                                     <br/>
-                                    <div class="row" >
+                                    <div class="row  justify-content-md-center" >
                                 {% endif %}
-                                     <a href="{% url 'order_control:order_items_details' adhesive.topOfCake.id %}">
-                                     <div id="adhesive{{ adhesive.id}}" class="col adhesive" ></div>
-                                     <span class='label label-default' style='font-size:11px;'>{{ adhesive.topOfCake.theme }}  </span>
-                                         <br>
-                                     <span class='label label-default' style='font-size:11px;'>{{ adhesive.topOfCake.birthdayName }}  </span>
-
-                                 </a>
+                                     <div class="col" style="padding-left: 50px;">
+                                        <div class="row">
+                                            <a href="{% url 'order_control:order_items_details' adhesive.topOfCake.id %}">
+                                                <div id="adhesive{{ adhesive.id}}" class="adhesive" ></div>
+                                            </a>
+                                        </div>
+                                        <div class="row" style=" padding-top: 10px;">
+                                            <span class='label label-default' style='font-size:11px;'>{{ adhesive.topOfCake.theme }}  </span>
+                                        </div>
+                                        <div class="row" style=" padding-top: 10px;">
+                                            <span class='label label-default' style='font-size:11px;'>{{ adhesive.topOfCake.birthdayName|truncatechars:20 }}  </span>
+                                        </div>
+                                         <div class="row" style=" padding-top: 10px;">
+                                            <span class='label label-default' style='font-size:11px;'>{{ adhesive.topOfCake.order.deliveryAt|date:"SHORT_DATE_FORMAT" }}  </span>
+                                        </div>
+                                     </div>
                             {% endfor %}
                         </div>
                         </br></br></br></br>
