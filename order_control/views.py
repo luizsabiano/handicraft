@@ -273,9 +273,10 @@ class OrderListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         today = date.today()
-        td = timedelta(90)
+        td = timedelta(45)
         initial_date = today - td
-        return Order.objects.filter(createdAt__range=(initial_date, today))
+        final_date = today + td
+        return Order.objects.filter(deliveryAt__range=(initial_date, final_date))
 
 
 @login_required(login_url=reverse_lazy('order_control:login'))
