@@ -8,14 +8,13 @@ from django.db.models import Sum, Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views.generic import TemplateView, CreateView, ListView, DeleteView, UpdateView, DetailView
 from rest_framework import pagination
 from rest_framework.response import Response
 from handicraft import settings
 from order_control.form import ClientForm, OrderForm, BoxTopForm, PaymentForm
 from order_control.models import Client, Order, BoxTop, LoyatyCard, Adhesive, Payment, Purchase
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import calendar
 
 
@@ -266,11 +265,17 @@ def order_items_details(request, id):
     order_item = BoxTop.objects.get(id=id)
     return render(request, 'order_control/order/item_detail.html', {'order_item': order_item})
 
-
+# /////////////////////////////
 class OrderListView(LoginRequiredMixin, ListView):
     model = Order
     template_name = 'order_control/order/list.html'
-    ordering = ['delivered', 'deliveryAt']
+    ordering = ['client', 'delivered', 'deliveryAt']
+
+    def get_queryset(self):
+        today = date.today()
+        td = timedelta(90)
+        initial_date = today - td
+        return Order.objects.filter(createdAt__range=(initial_date, today))
 
 
 @login_required(login_url=reverse_lazy('order_control:login'))
