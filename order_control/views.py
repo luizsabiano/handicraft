@@ -72,8 +72,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
         finalDate = datetime.strptime(dataConsulta + '-' + str(monthRange[1]), '%Y-%m-%d').date().strftime("%Y-%m-%d")
         payments = Payment.objects.filter(createAt__range=(initialDate, finalDate)).order_by('createAt')
-        # teste = payments.filter(order__client__cakeMaker=True).values('createAt', 'amount').order_by('createAt')
-        # for t in teste: print(t)
+
         purchases = Purchase.objects.all().order_by('createAt').filter(createAt__range=(initialDate, finalDate))
         totalPayments = payments.aggregate(Sum('amount'))
 
@@ -265,7 +264,7 @@ def order_items_details(request, id):
     order_item = BoxTop.objects.get(id=id)
     return render(request, 'order_control/order/item_detail.html', {'order_item': order_item})
 
-# /////////////////////////////
+
 class OrderListView(LoginRequiredMixin, ListView):
     model = Order
     template_name = 'order_control/order/list.html'

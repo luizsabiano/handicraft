@@ -1,4 +1,5 @@
 import decimal
+from datetime import date, timedelta
 
 from decimal import Decimal
 from rest_framework import viewsets, status, pagination
@@ -49,8 +50,15 @@ class PurchasedItemsViewSet(viewsets.ModelViewSet):
 
 
 class OrdersViewSet(viewsets.ModelViewSet):
+    # Classe a ser serializada
     serializer_class = OrderSerializer
-    queryset = Order.objects.all()
+    #queryset = Order.objects.all()
+
+    today = date.today()
+    td = timedelta(15)
+    initial_date = today - td
+    final_date = today + td
+    queryset = Order.objects.filter(deliveryAt__range=(initial_date, final_date)).order_by('client')
 
     def create(self, request, *args, **kwargs):
         dataDict = {}
