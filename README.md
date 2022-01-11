@@ -1,15 +1,15 @@
-#Handicraft Order Control
+# Handicraft Order Control
 
 Este é um aplicativo criado para minha belíssima esposa, artesã, com o intuito incial de gerenciar pedidos e controle financeiro.
 
 
-####*Por que um aplicativo para este fim?*
+#### *Por que um aplicativo para este fim?*
 
 1. A existência de diversos meios possíveis em que os clientes realizavam orçamento/pedidos como whatsapp, messenger, etc, somado a datas diferenciadas para entrega geravam retrabalho devido a exaustivas buscas em apps diferentes a procura de detalhes ou da data de entrega de determinado pedido.
 2. Descontrole orçamentário, não existia até então nada que controlasse as entradas e saídas de valores, dessa forma perguntas como, quanto foi arrecadado no mês vigente ou quanto foi gasto com materiais não podiam ser respondidas.
 3. O controle de pagamentos dos clientes eram anotações feitas em cadernos, que necessitavam de revisões constantes sem nenhum sistema de busca aprimorado.
 
-####*O que foi feito?*
+#### *O que foi feito?*
 
 Para satisfezer as necessidades acima foi implementado:
 
@@ -63,4 +63,5 @@ Esta opção de "Boleira", confeira de bolos, é necessidade específica para mi
 ![Cadastrode Clientes](readme/cadCompras.png)
 
 ---
+
 
