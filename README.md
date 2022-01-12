@@ -82,6 +82,7 @@ A página inicial apresenta um gráfico com os valores de entrada e saída e o s
 De tempo em tempo o gráfico alterna com o relatório de clientes que já comtemplaram o cartão fidelidade e ainda não receberam brindes.
 
 <br>
+
 ### Slide 1
 
 ![Página Inicial](readme/homeSaldo.png)
@@ -89,9 +90,40 @@ De tempo em tempo o gráfico alterna com o relatório de clientes que já comtem
 <br><br>
 
 ### Slide 2
+
 <br>
 
 ![Página Inicial](readme/pendenciaBrindes.png)
+
+---
+
+## Lista de Pedidos
+
+Neste relatório é exibido por padrão os pedidos ainda não quitados. Também é possível lista os não entregues ou todos. Todos as possibilidades são ordenadas por nome do cliente, data de entrega e se entregue.
+
+Campo de pesquisa por nome de cliente funciona como filtro.
+
+![Lista de Pedidos](readme/listOrder.png)
+
+---
+
+## Lista de Clientes
+
+Neste relatório é exibido por padrão os clientes que ainda possuem pedidos não quitados. Também é possível lista somente boleiras ou todos.
+
+<br>
+
+![Lista de Pedidos](readme/listCli.png)
+
+---
+
+# Tecnologias utilizadas
+
+1. Backend com Python e Django, Django-rest
+2. Reatividade com Vue.js
+3. Aparencia com Django Templates e Bootstrap
+4. Ordenação e pesquisa com lodash.js
+5. Além de muito html, css e javascript
 
 
 
