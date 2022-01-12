@@ -64,4 +64,53 @@ Esta opção de "Boleira", confeira de bolos, é necessidade específica para mi
 
 ---
 
+## As alterações
+
+Todas os formularios de alterações aproveitam os formulários dos cadastros não sendo necessário apresentá-los.
+
+---
+
+## As exclusões
+
+De forma semelhante, as exclusões aproveitam os formulários dos cadastros porém com os campos não editáveis. Após clicar em excluir é necessário outra confirmação para que a exclusão seja realizada.
+
+---
+
+## Home / Página Inicial
+
+A página inicial apresenta um gráfico com os valores de entrada e saída e o saldo do mes vigente. É possível alterar o mês e visualizar meses anteriores.
+De tempo em tempo o gráfico alterna com o relatório de clientes que já comtemplaram o cartão fidelidade e ainda não receberam brindes.
+
+<br>
+### Slide 1
+
+![Página Inicial](readme/homeSaldo.png)
+
+<br><br>
+
+### Slide 2
+<br>
+
+![Página Inicial](readme/pendenciaBrindes.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
