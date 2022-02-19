@@ -77,7 +77,7 @@ class Order(models.Model):
 
 class BoxTop(models.Model):
     gift = models.BooleanField(default=False, verbose_name="Brinde?")
-    type = models.CharField(max_length=255, choices=BOX_TOP_CHOICES)
+    type = models.CharField(max_length=255, choices=BOX_TOP_CHOICES, verbose_name="Tipo")
     theme = models.CharField(max_length=255)
     birthdayName = models.CharField(max_length=255, null=True, blank=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00, verbose_name='Valor total R$')
